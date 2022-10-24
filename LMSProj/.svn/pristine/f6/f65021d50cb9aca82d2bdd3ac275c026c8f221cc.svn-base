@@ -1,0 +1,220 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<script src="/resources/js/jquery-3.6.0.js"></script>
+<script type="text/javascript" src="/resources/js/tui-grid.js"></script>
+<link rel="stylesheet" href="/resources/css/tui-grid.css" type="text/css">
+<style type="text/css">
+#detailSearch{
+	width : 100%;
+	margin-top: 20px;
+}
+.intext{
+	width : 40%;
+}
+.tableTh{
+	text-align: right;
+	padding: 20px;
+}
+.tableTd{
+	padding: 10px;
+	text-align: center;
+}
+</style>
+</head>
+<script type="text/javascript">
+function doOpenCheck(chk){
+    var obj = document.getElementsByName("aaa");
+    for(var i=0; i<obj.length; i++){
+        if(obj[i] != chk){
+            obj[i].checked = false;
+        }
+    }
+}
+$(function() {
+	document.getElementById('todayDate').value = new Date().toISOString().slice(0, 10);
+	document.getElementById('inputDate').value = new Date().toISOString().slice(0, 10);
+	
+
+	
+	$('#selectId').on('change', function(){
+		value = this.value;
+		console.log(value);
+// 		console.log(this.value);
+// 		if(this.value == 'day'){
+			
+// 		}
+		
+		$.ajax({
+			url : "/approval/dateCal",
+			type : "POST",
+			data : {"value" : value},
+			success : function(result){
+				console.log(result);
+				if(value == 'day'){
+					alert("day다!");
+// 					$('#todayDate').val()
+				}else if(value == 'week'){
+					alert("week다!");
+				}else if(value == 'month'){
+					alert("month다!");
+				}else if(value == 'year'){
+					alert("year다!");
+				}
+			}
+			
+		})
+	})
+	
+	//버튼 눌렀을 경우 검색 리스트 불러오기
+	$('#searchBut').on('click', function(){
+		lecaNote = $('#lecaNote').val();
+		lecaNm = $('#lecaNm').val();
+		lecaDt = $('#inputDate').val();
+		lecaAdt = $('#todayDate').val();
+		value= $('input:checkbox[name="aaa"]:checked').data("value");
+		console.log(value);
+		
+		
+		let dataObject = {
+			lecaNote : lecaNote,
+			lecaNm : lecaNm,
+			value : value,
+			lecaDt : lecaDt,
+			lecaAdt : lecaAdt
+		};
+		console.log(dataObject);
+		
+		$.ajax({
+			url : '/approval/mgrApprovalListAgain',
+			type : 'POST',
+			data : JSON.stringify(dataObject),
+			contentType : "application/json;charset=utf-8",
+			dataType : 'JSON',
+			success : function(result){
+				console.log(result);
+				$('#grid').empty();
+				
+				grid = new tui.Grid({
+					el : document.getElementById('grid'),
+					data : result,
+					scrollX : true,
+					scrollY : true,
+					minBodyHeight : 500,
+					bodyHeight: 250,
+					columns : [
+						{header : '결재문서유형', name : 'lecaBook', filter : 'select', width : 230, align : 'center'},
+						{header : '기안자 소속', name : 'lecaTt', width : 230, align : 'center'},
+						{header : '기안자 명', name : 'lecaNote', width : 200, align : 'center'},
+						{header : '신청일자', name : 'lecaDt', width : 200, align : 'center'},
+						{header : '검토자 소속', name : 'lecaRoom', width : 230, align : 'center'},
+						{header : '검토자', name : 'lecaNm', width : 200, align : 'center'},
+						{header : '결재일자', name : 'lecaAdt', width : 200, align : 'center'},
+						{header : '승인여부', name : 'lecaCon', align : 'center'}
+					],
+					rowHeaders: ['rowNum'],
+					columnOptions: {
+				        resizable: true
+					}
+				
+	             
+
+				});
+
+
+			}
+
+		})
+		
+	})
+})
+</script>
+<script type="text/javascript">
+	var gridData;
+	var grid;
+	var memCd = $('#memCdHidden').val();
+	
+
+	window.onload = function() {
+		
+		//전체 리스트 가져오기
+		$.ajax({
+			url : "/approval/mgrApprovalList",
+			type : 'GET',
+			dataType : 'JSON',
+			success : function(result) {
+				
+				grid = new tui.Grid({
+					el : document.getElementById('grid'),
+					data : result,
+					scrollX : true,
+					scrollY : true,
+					minBodyHeight : 500,
+					bodyHeight: 250,
+					columns : [
+						{header : '결재문서유형', name : 'lecaBook', filter : 'select', width : 230, align : 'center'},
+						{header : '기안자 소속', name : 'lecaTt', width : 230, align : 'center'},
+						{header : '기안자 명', name : 'lecaNote', width : 200, align : 'center'},
+						{header : '신청일자', name : 'lecaDt', width : 200, align : 'center'},
+						{header : '검토자 소속', name : 'lecaRoom', width : 230, align : 'center'},
+						{header : '검토자', name : 'lecaNm', width : 200, align : 'center'},
+						{header : '결재일자', name : 'lecaAdt', width : 200, align : 'center'},
+						{header : '승인여부', name : 'lecaCon', align : 'center'}
+					],
+					rowHeaders: ['rowNum'],
+					columnOptions: {
+				        resizable: true
+					}
+
+				});
+				}
+				
+		
+
+		});
+
+}
+
+	
+</script>
+<body>
+<b>[상세 검색조건]</b>
+<table border="1" id="detailSearch">
+	<tr>
+		<th class="tableTh">기간</th>
+		<td class="tableTd">
+			<select name="selectId" id="selectId" style="width : 150px; height: 30px;">
+				<option value="전체" selected="selected" >전체</option>
+				<option value="day">지난 1일</option>
+				<option value="week">지난 1주</option>
+				<option value="month">지난 1개월</option>
+				<option value="year">지난 1년</option>
+			</select>
+			<input type="date" style="width : 150px; height: 30px;" id="inputDate" /> <b>~</b> 
+			<input type="date" id="todayDate" style="width : 150px; height: 30px;"/> &nbsp;&nbsp;&nbsp;
+			<label><input type="checkbox" checked data-value="lecaDt" onclick="doOpenCheck(this);"  name="aaa"> 기안일기준</label>&nbsp;&nbsp;
+			<label><input type="checkbox" data-value="lecaAdt" onclick="doOpenCheck(this);" name="aaa"> 결재일기준</label>
+		</td>
+	</tr>
+	<tr>
+		<th class="tableTh">결재라인</th>
+		<td class="tableTd">
+			기안자 : <input type="text" class="intext" style="height: 30px;" id="lecaNote"><br>
+			결재자 : <input type="text" class="intext" style="margin-top: 5px; height: 30px;" id="lecaNm">
+		</td>
+	</tr>
+</table>
+<button type="button" id = "searchBut">검색하기</button>
+	
+	<br><br>
+	<input type="hidden" id="memCdHidden" value="${memCd}" />
+	<br>
+	<b>[전체 결재]</b> <br>
+	<div id="grid"></div>
+
+</body>
+
+</html>

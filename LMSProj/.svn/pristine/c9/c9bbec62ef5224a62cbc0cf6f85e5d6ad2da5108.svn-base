@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="kr.ac.lms.mapper.ScholarshipMapper">
+  
+  <!-- 교수가 현재 년도, 현재 학기(현재 월)에 교수추천장학금을 몇명 주었는지 확인하기-->
+  <select id="countCheck" parameterType="int" resultType="int">
+  SELECT COUNT(MEM_CD) FROM SCL_HISTORY WHERE MEM_CD = #{memCd} AND TO_CHAR(SCLH_DT,'YY-MM') = TO_CHAR(SYSDATE,'YY-MM')
+  </select>
+  
+  <!-- 교수의 학과 학생 불러오기(이미 장학금을 준 학생과 재학생이 아닌 학생은 제외)  -->
+  <select id="stuList" parameterType="int" resultType="HashMap">
+  	SELECT STU_CD
+  	, STU_YR
+  	, CASE WHEN MOD(STU_SEM,2) =1 THEN 1 ELSE 2 END AS STU_SEM
+  	, MEM_NM  
+  	FROM STUDENT, MEMBER 
+  	WHERE DEP_CD = #{depCd} AND STU_CD = MEM_CD AND REC_CATE = 'R106'
+	MINUS
+	SELECT 
+	STU_CD
+	, STU_YR
+	, CASE WHEN MOD(STU_SEM,2) =1 THEN 1 ELSE 2 END AS STU_SEM, MEM_NM  
+	FROM STUDENT A, MEMBER B 
+	WHERE A.STU_CD = B.MEM_CD 
+	AND DEP_CD = #{DEPCD} 
+	AND  STU_CD 
+	IN (SELECT STU_CD FROM SCL_HISTORY WHERE TO_CHAR(SCLH_DT,'YY-MM') = TO_CHAR(SYSDATE,'YY-MM'))
+  </select>
+  
+  <!-- 교수 추천 장학금 신청하기 -->
+  <update id="proApply" parameterType="java.util.List">
+  	INSERT INTO SCL_HISTORY (
+    SCLH_CD
+    , STU_CD
+    , SCL_CD
+    , SCLH_SEM
+    , SCLH_DT
+    , SCLH_AMT
+    , SCLH_YN
+    , MEM_CD
+    , SCLH_RSN
+    , SCLH_GUBUN
+    , SCLH_ADT
+    , MGR_CD
+    )
+    SELECT SCLHISTORY_SEQ.NEXTVAL AS sclhCd
+    	,T.*
+    	FROM(
+    	<foreach collection="list" item="item" index="index" separator="union all">
+    	SELECT #{item.stuCd} AS stuCd
+    	,3 AS sclCd
+    	,#{item.stuSem} AS sclhSem
+    	,SYSDATE AS sclhDt
+    	,300000 AS sclhAmt
+    	,0 AS sclhYn
+    	,#{item.memCd} AS memCd
+    	, NULL AS sclhRsn
+    	, 'AP102' AS sclhGubun
+    	, NULL AS sclhAdt
+    	, NULL AS mgrCd
+    	FROM DUAL
+    	</foreach>
+    	)T
+  </update>
+  
+  <!-- 학생의 장학금 수혜내역 조회 -->
+  <select id="stuHistory" parameterType="int" resultType="sclHistoryVO">
+  	SELECT 
+	B.SCL_NM
+  , TO_CHAR(A.SCLH_DT,'YYYY') AS SCLH_DT
+  , CASE WHEN MOD(A.SCLH_SEM,2) =1 THEN 1 ELSE 2 END AS SCLH_SEM
+  , A.SCLH_AMT
+	FROM
+    SCL_HISTORY A, SCHOLARSHIP B
+    WHERE A.SCL_CD = B.SCL_CD 
+    AND SCLH_YN = 1 
+    AND STU_CD = #{stuCd} 
+    ORDER BY A.SCLH_SEM DESC
+  </select>
+  
+  <!-- 관리자의 모든 학생 장학금 수혜내역 조회 -->
+  <select id="allHistory" resultType="sclHistoryVO">
+ 	SELECT 
+	    TO_CHAR(A.SCLH_DT,'YYYY') AS SCLH_DT
+	    , CASE WHEN MOD(A.SCLH_SEM,2) =1 THEN 1 ELSE 2 END AS SCLH_SEM
+	    , A.STU_CD 
+	    , C.MEM_NM 
+	    , B.SCL_NM 
+	    , F.COL_NM AS SCLH_RSN
+	    , D.DEP_NM AS SCLH_GUBUN
+	    , A.SCLH_AMT 
+	FROM SCL_HISTORY A, SCHOLARSHIP B, MEMBER C, DEPARTMENT D, STUDENT E, COLLEGE F
+	WHERE A.SCL_CD = B.SCL_CD 
+	AND SCLH_YN = 1 
+	AND C.MEM_CD = A.STU_CD 
+	AND D.DEP_CD = E.DEP_CD 
+	AND E.STU_CD = A.STU_CD 
+	AND F.COL_CD = D.COL_CD
+	ORDER BY A.SCLH_DT DESC
+  </select>
+  
+  <!-- 교수가 장학금 추천한 학생 리스트 조회 -->
+  <select id="proHistory" resultType="sclHistoryVO">
+  <![CDATA[
+  	SELECT
+	TO_CHAR(A.SCLH_DT,'YYYY')||'년'|| CASE WHEN TO_NUMBER(TO_CHAR(A.SCLH_DT,'MM'))>=3 AND
+	TO_NUMBER(TO_CHAR(A.SCLH_DT,'MM'))<= 8 THEN 1 ELSE 2 END ||'학기' AS SCLH_DT
+	, A.STU_CD
+	, B.MEM_NM SCLH_RSN
+	FROM
+	SCL_HISTORY A, MEMBER B, STUDENT C
+	WHERE 
+	A.MEM_CD = #{memCd} 
+	AND A.STU_CD = B.MEM_CD 
+	AND C.STU_CD = A.STU_CD
+	]]>
+	
+  </select>
+  
+  </mapper>

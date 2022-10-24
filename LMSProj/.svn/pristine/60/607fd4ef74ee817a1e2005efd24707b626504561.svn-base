@@ -1,0 +1,16 @@
+package kr.ac.lms.service;
+
+import java.util.HashMap;
+import java.util.List;
+
+import kr.ac.lms.vo.SclHistoryVO;
+
+public interface ScholarshipService {
+	public List<HashMap<String,Object>> stuList(int depCd);
+	public int proApply(List<HashMap<String,Object>> list);
+	public List<SclHistoryVO> stuHistory(int stuCd);
+	public List<SclHistoryVO> allHistory();
+	public int countCheck(int memCd);
+	public List<SclHistoryVO>proHistory(int proCd);
+	
+}

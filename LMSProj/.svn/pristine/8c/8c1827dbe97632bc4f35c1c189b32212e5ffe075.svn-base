@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="kr.ac.lms.mapper.PortletMapper">
+<update id="updateSave" parameterType="hashMap">
+	UPDATE PORTLET
+	SET PO_X = #{poX}, PO_Y = #{poY}, PO_W = #{poW}, PO_H = #{poH}
+	WHERE MEM_CD = #{memCd}
+	AND   PO_CATE = #{poCate}
+</update>
+
+<select id="portletSelect" parameterType="memberVO" resultType="portletVO">
+	SELECT PO_CD, MEM_CD, PO_CATE, PO_YN, PO_X, PO_Y, PO_W, PO_H
+	FROM PORTLET
+	WHERE MEM_CD = #{memCd}
+	AND PO_YN = 1
+</select>
+
+<select id="portletNotSelect" parameterType="memberVO" resultType="portletVO">
+	SELECT  PO_CD, MEM_CD, 
+	        (SELECT COMD_NM FROM COMMON_DETAIL WHERE COMD_CD = PO_CATE) PO_CATE,
+	        PO_YN, PO_X, PO_Y, PO_W, PO_H 
+	FROM PORTLET 
+	WHERE MEM_CD = #{memCd}
+	AND PO_YN = 0
+</select>	
+</mapper>

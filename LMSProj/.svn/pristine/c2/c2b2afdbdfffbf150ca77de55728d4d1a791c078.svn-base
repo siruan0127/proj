@@ -1,0 +1,195 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style type="text/css">
+#td1, #td2 {
+	width: 140px;
+}
+
+#header {
+	height: 50px;
+}
+
+#tab {
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+</style>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+<script type="text/javascript"
+	src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+<script type="text/javascript"
+	src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script src="https://cdn.iamport.kr/js/iamport.payment-1.1.5.js"
+	type="text/javascript"></script>
+<script type="text/javascript">
+	$(function() {
+
+		$.ajax({
+			url : '/payment/billCount',
+			type : 'POST',
+			dataType : 'json',
+			success : function(res) {
+				console.log(res);
+				if (res != 1) {
+					alert("등록금을 이미 납부하였습니다.")
+					location.href = '/payment/stuPaymentList';
+				} else {
+					console.log("cnt테스트");
+				}
+			}
+		})
+
+		var IMP = window.IMP;
+		var code = "imp51127026"; //가맹점 식별코드
+		IMP.init(code);
+
+		var stuname = $('#td1').text();
+		var payamt = $('#td2').text();
+		var payCd = $('div').attr('id');
+		//console.log(stuname, payCd , payamt);
+
+		$('#pay').on('click', function() {
+			IMP.request_pay({
+
+				//name과 amout만있어도 결제 진행가능
+				pg : "html5_inicis",
+				pay_method : 'card',
+				merchant_uid : payCd + '4',
+				amount : 100,
+				name : '등록금결제', // 상품명
+				buyer_name : stuname,
+			//결제완료후 이동할 페이지 kko나 kkopay는 생략 가능
+			//m_redirect_url : 'https://localhost:8080/payments/complete'
+			}, function(rsp) {
+				if (rsp.success) {
+					var msg = '결제가 완료되었습니다';
+					var result = {
+						"imp_uid" : rsp.imp_uid,
+						"merchant_uid" : rsp.merchant_uid,
+						"pay_date" : new Date().getTime(),
+						"amount" : rsp.paid_amount,
+						"card_no" : rsp.apply_num,
+						"refund" : 'payed'
+					}
+					//console.log("결제성공 " + msg);
+					//console.log(payCd);
+
+					$.ajax({
+						url : '/payment/pay',
+						type : 'POST',
+						data : JSON.stringify({
+							"payCd" : payCd
+						}),
+						contentType : 'application/json', //서버에서 보내줄 데이터 타입
+						success : function(res) {
+							if (res > 0)
+								alert("결제에 성공하였습니다. 납부페이지로 이동합니다.")
+							location.href = '/payment/stuPaymentList';
+
+						},
+						error : function() {
+							console.log("Insert ajax 통신 실패!!!");
+						}
+					}) //ajax
+
+				} else {//결제 실패시
+					var msg = '결제에 실패했습니다';
+					msg += '에러 : ' + rsp.error_msg
+				}
+				console.log(msg);
+			})
+		})
+
+	})
+
+	function savePDF() {
+		//저장 영역 div id
+		html2canvas($('#tabdiv')[0], {
+			//logging : true,		// 디버그 목적 로그
+			//proxy: "html2canvasproxy.php",
+			allowTaint : true, // cross-origin allow 
+			useCORS : true, // CORS 사용한 서버로부터 이미지 로드할 것인지 여부
+			scale : 2
+		// 기본 96dpi에서 해상도를 두 배로 증가
+
+		}).then(
+				function(canvas) {
+					// 캔버스를 이미지로 변환
+					var imgData = canvas.toDataURL('image/png');
+
+					var imgWidth = 190; // 이미지 가로 길이(mm) / A4 기준 210mm
+					var pageHeight = imgWidth * 1.414; // 출력 페이지 세로 길이 계산 A4 기준
+					var imgHeight = canvas.height * imgWidth / canvas.width;
+					var heightLeft = imgHeight;
+					var margin = 10; // 출력 페이지 여백설정
+					var doc = new jsPDF('p', 'mm');
+					var position = 0;
+
+					// 첫 페이지 출력
+					doc.addImage(imgData, 'PNG', margin, position, imgWidth,
+							imgHeight);
+					heightLeft -= pageHeight;
+
+					// 파일 저장
+					doc.save('filename.pdf');
+				});
+	}
+</script>
+</head>
+<body>
+
+	<div id="${map.PAY_CD }">
+		<div id="tabdiv">
+			<table id="tab" border='1'>
+				<tr>
+					<td colspan="4" id="header">납입금 고지서</td>
+				</tr>
+				<tr>
+					<td>학번</td>
+					<td>${map.STU_CD}</td>
+					<td>학기</td>
+					<td>${map.PAY_SEM}</td>
+				</tr>
+				<tr>
+					<td>성명</td>
+					<td id="td1">${name }</td>
+					<td>학과</td>
+					<td>${depName }</td>
+				</tr>
+				<tr>
+					<td colspan="2">구분</td>
+					<td>등록금(1)</td>
+					<td>장학금(2)</td>
+				</tr>
+				<tr>
+					<td colspan="2">입학금</td>
+					<td>0</td>
+					<td>0</td>
+				</tr>
+				<tr>
+					<td colspan="2">수업료</td>
+					<td>${fee}</td>
+					<td>${map.SCLH_AMT }</td>
+				</tr>
+				<tr>
+					<td colspan="2">납입금액(1)-(2)</td>
+					<td colspan="2" id="td2">${map.PAY_AMT }</td>
+				</tr>
+				<tr>
+					<td>납부계좌</td>
+					<td colspan="3">우리 1002747911748</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<br>
+	<button id="pay">고지서 납부</button>
+	<input type="button" value="save" onclick="savePDF()">
+
+</body>
+</html>

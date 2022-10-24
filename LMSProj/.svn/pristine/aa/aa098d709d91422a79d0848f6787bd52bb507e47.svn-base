@@ -1,0 +1,15 @@
+package kr.ac.lms.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.ac.lms.vo.LecApplyVO;
+
+public interface RegisterMapper {
+	
+	//수강신청 리스트 불러오기
+	public List<LecApplyVO> list(Map<String, Object> map);
+	
+	//포틀릿용 성적 조회 - 수강신청내역 불러오기
+	public List<LecApplyVO> ptlList(Map<String, Object> map);
+}

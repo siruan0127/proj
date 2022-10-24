@@ -1,0 +1,189 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style type="text/css">
+#check{
+	height : 40px;
+	background-color: lightyellow;
+	margin-bottom: 10px;
+}
+#grid *{
+	text-align: center;
+}
+#btn1{
+float: right;
+}
+.comment{
+padding: 10px;
+}
+</style>
+<script src="/resources/js/jquery-3.6.0.js"></script>
+<link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+<script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+<script>
+var girdData;
+var grid;
+var test;
+var cnt;
+
+function disableFunc(){
+	$.ajax({
+	url:"/scholarship/countCheck",
+	type: "POST",
+	dataType : "JSON",
+	success:function(result){
+		console.log(result);
+		if(result>1){
+			$('#grid').css('opacity','0.3');
+			$('#check').empty();
+			let str='<div class="comment">이미 학생 2명을 추천하였습니다.</div>'
+			$('#check').append(str);
+			}else if(result == 0){
+			let str='<div class="comment">현재 학생 2명을 추천할 수 있습니다.</div>'
+			$('#check').append(str);
+			cnt = 0;
+			}else if(result ==1){
+			let str='<div class="comment">현재 학생 1명을 추천할 수 있습니다.</div>'
+			$('#check').append(str);
+			cnt = 1;
+		}
+	}
+})
+};
+
+var gridList = function(){ 
+	
+	$('#grid').empty();
+	
+	$.ajax({
+		url:"/scholarship/recommendGrid",
+		dataType:'json',
+		type: "POST",
+		success:function(result){
+				
+			girdData = JSON.stringify(result);
+			
+			grid = new tui.Grid({
+				el: document.getElementById('grid'), 
+				data : result,
+ 				scrollX : false, //옆위로 스크롤기능 막음
+ 				scrollY : false,
+ 				rowHeaders: [{type: 'rowNum'},{type: 'checkbox'}],
+ 			
+				columns: [
+					{
+						header: '학번',
+						name: 'STU_CD'
+					},
+					{
+						header: '이름',
+						name: 'MEM_NM'
+					},
+					{
+						header: '학년',
+						filter : 'select',
+						name: 'STU_YR'
+					},
+					{
+						header: '학기',
+						name: 'STU_SEM'
+					},
+					{
+						header : '추천여부',
+						filter : 'select',
+						name: 'RECOMMEND'
+					}
+				]
+			});
+			
+		var test3 =grid.findRows({
+			RECOMMEND : '추천'
+		});
+		
+		$.each(test3, function(i,v){
+			grid.disableRowCheck(v.rowKey);
+		});
+			
+		grid.on('check', function(object){
+		test = grid.getCheckedRows(object);
+			})
+	
+		grid.on('uncheck',function(object){
+		test = grid.getCheckedRows(object);
+				})
+		
+		grid.on('checkAll',function(object){
+		test = grid.getCheckedRows(object);
+				})
+			}
+		})
+		
+	}
+	
+function submit(){
+	
+	var dataSet = [];
+	
+	$.each(test,function(i,v){
+		var tmp = {};
+		var stuCd = v.STU_CD;
+		var stuSem = v.STU_SEM;
+		var memCd = $('#btn1').data('memcd');
+		var sclCd = 3;
+		tmp.stuCd = stuCd;
+		tmp.stuSem = stuSem;
+		tmp.sclCd = sclCd;
+		tmp.memCd = memCd;
+		dataSet.push(tmp);
+	})
+	
+	var size = dataSet.length
+	var max = size + cnt;
+	
+	if(max>2){
+		alert("학생 추천은 2명까지만 가능합니다.")
+	}else{
+		$.ajax({
+			url : "/scholarship/proApply",
+			type : "POST",
+			data : JSON.stringify(dataSet),
+			dataType:'json',
+			contentType: 'application/json',
+            success : function(result){
+            	if(result>0){
+            	alert("장학금 신청이 완료되었습니다.");
+            	disableFunc();
+        		gridList();
+            	}
+            }
+		})
+	}
+}	
+
+$(document).ready(function(){
+	
+	disableFunc();
+	gridList();
+	
+	$('#btn1').on('click',function(){
+		submit();
+		
+	})
+	
+});
+
+
+</script>
+</head>
+<body>
+<div id="check"></div>
+<div id="grid">
+</div>
+<input type="button" id="btn1" value="제출" data-memcd="${memCd}">
+</body>
+</html>

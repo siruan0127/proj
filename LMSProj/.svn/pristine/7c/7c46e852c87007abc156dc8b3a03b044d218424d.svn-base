@@ -1,0 +1,96 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<style>
+.left-side-menu {
+	padding-top: 6%;
+}
+</style>
+<div class="left-side-menu">
+	<div class="h-100" id="left-side-menu-container" data-simplebar>
+		<!--- Sidemenu -->
+		<ul class="metismenu side-nav">
+			<li class="side-nav-item">
+				<a href="javascript: void(0);" class="side-nav-link">
+					<span>마이페이지 </span><span class="menu-arrow"></span>
+					</a>
+				<ul class="side-nav-second-level" aria-expanded="false">
+					<li><a href="/myPage/stuMyPage">신상정보</a></li>
+					<li><a href="#">개인일정관리</a></li>
+				</ul>
+			</li>
+			
+			<li class="side-nav-item">
+				<a href="javascript: void(0);" class="side-nav-link">
+					<span>학적관리 </span><span class="menu-arrow"></span>
+				</a>
+				<ul class="side-nav-second-level" aria-expanded="false">
+					<li><a href="/record/apply">휴복학신청</a></li>
+					<li><a href="/record/dropApply">자퇴신청</a></li>
+					<li class="side-nav-item">
+						<a href="javascript: void(0);" aria-expanded="false">졸업 <span class="menu-arrow"></span></a>
+						<ul class="side-nav-third-level" aria-expanded="false">
+							<li><a href="javascript: void(0);">졸업신청</a></li>
+							<li><a href="javascript: void(0);">졸업사정 성적알람표</a></li>
+						</ul>
+					</li>
+					<li><a href="#">학적변동현황</a></li>
+				</ul>
+			</li>
+			
+			<li class="side-nav-item">
+				<a href="javascript: void(0);" class="side-nav-link">
+					<span>강의정보 </span><span class="menu-arrow"></span>
+					</a>
+				<ul class="side-nav-second-level" aria-expanded="false">
+					<li><a href="/course/list">수강편람</a></li>
+					<li><a href="#">강의계획조회</a></li>
+				</ul>
+			</li>
+			
+			<li class="side-nav-item">
+				<a href="javascript: void(0);" class="side-nav-link">
+					<span>성적정보 </span><span class="menu-arrow"></span>
+					</a>
+				<ul class="side-nav-second-level" aria-expanded="false">
+					<li><a href="#">전체성적조회</a></li>
+					<li><a href="#">당학기성적조회</a></li>
+				</ul>
+			</li>
+			
+			<li class="side-nav-item">
+				<a href="javascript: void(0);" class="side-nav-link">
+					<span>장학/등록 </span><span class="menu-arrow"></span>
+					</a>
+				<ul class="side-nav-second-level" aria-expanded="false">
+					<li><a href="#">장학금수혜이력</a></li>
+					<li><a href="#">등록금납부이력</a></li>
+					<li><a href="#">등록금고지서</a></li>
+				</ul>
+			</li>
+			
+			<li class="side-nav-item">
+				<a href="javascript: void(0);" class="side-nav-link">
+					<span>상담 </span><span class="menu-arrow"></span>
+					</a>
+				<ul class="side-nav-second-level" aria-expanded="false">
+					<li><a href="#">상담신청밎이력</a></li>
+				</ul>
+			</li>
+			
+			<li class="side-nav-item">
+				<a href="javascript: void(0);" class="side-nav-link">
+					<span>시설 </span><span class="menu-arrow"></span>
+					</a>
+				<ul class="side-nav-second-level" aria-expanded="false">
+					<li><a href="#">시설신청및 이력</a></li>
+				</ul>
+			</li>
+
+		</ul>
+		<!-- End Sidebar -->
+
+		<div class="clearfix"></div>
+
+	</div>
+	<!-- Sidebar -left -->
+
+</div>

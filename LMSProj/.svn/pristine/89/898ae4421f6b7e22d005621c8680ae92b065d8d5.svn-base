@@ -1,0 +1,46 @@
+package kr.ac.lms.controller;
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import kr.ac.lms.service.StudentLectureService;
+import kr.ac.lms.vo.LecApplyVO;
+import kr.ac.lms.vo.MemberVO;
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
+@RequestMapping("/studentLecture")
+@Controller
+public class StudentLectureController {
+
+	@Autowired
+	StudentLectureService studentLectureService;
+	
+	@GetMapping("/stuList")
+	public String list(HttpServletRequest request, Model model) {
+		log.info("stuList");
+		
+		// 세션 불러 오고 나서
+//		HttpSession session = request.getSession();
+//		MemberVO memberVO = (MemberVO)session.getAttribute("memSession");
+//		
+//		memberVO.getMemCd();
+		
+		int stuCd = 20182696;
+		
+		List<LecApplyVO> list = this.studentLectureService.getStuLecList(stuCd);
+		
+		log.info("" + list.toString());
+		
+		model.addAttribute("data", list);
+		
+		return "deshboard/stuList";
+	}
+}

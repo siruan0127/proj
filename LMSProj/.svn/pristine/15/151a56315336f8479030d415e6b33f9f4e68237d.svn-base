@@ -1,0 +1,202 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+#grid *{
+text-align: center;
+}
+#check{
+margin-top : 10px;
+margin-bottom : 10px;
+background-color: lightyellow;
+border : 1px solid lightgrey;
+height : 30px;
+}
+</style>
+<link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+<script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+<script src="/resources/js/jquery-3.6.0.js"></script>
+<script type="text/javascript">
+// function insertCheck(){
+// 	$.ajax({
+// 		url : "/scholarship/insertGradeCheck",
+// 		method : "POST",
+// 		dataType : "json",
+// 		success : function(result){
+// 			$('#check').empty();
+// 			$('#check').append(result);
+// 		}
+// 	})	
+// }
+
+$(document).ready(function(){
+	var girdData;
+	var grid;
+	var stuCd;
+	var dataSet = [];
+	
+	//insertCheck();
+	
+	var gridList = function(){ 
+		$.ajax({
+			url:"/scholarship/gradeListGrid",
+			dataType:'json',
+			type: "POST",
+			success:function(result){
+				console.log(result);
+				
+				$('#grid').empty();
+				
+				$.each(result,function(i,v){
+					var tmp = {};
+					var stuCd = v.STU_CD; //학번
+					var sclCd;//장학금 코드
+					var sclhAmt = v.SCHOLARSHIP;
+					tmp.stuCd = stuCd;
+					tmp.sclhAmt = sclhAmt;
+					
+					
+					if(v.RANKING=='1'){ //등수에 따라 장학금 코드 부여
+						sclCd = 1
+					}else if(v.RANKING=='2'){
+						sclCd = 2
+					}else{
+						sclCd = 4
+					}
+					tmp.sclCd = sclCd;
+					
+					dataSet.push(tmp);
+				})
+				
+				console.log(dataSet);
+					
+				girdData = JSON.stringify(result);
+				
+				grid = new tui.Grid({
+					el: document.getElementById('grid'), 
+					data : result,
+	 				scrollX : true, 
+	 				scrollY : true,
+	 				rowHeaders: [{type: 'rowNum'}],
+					columns: [
+						{
+							header: '학번',
+							name: 'STU_CD',
+						},
+						{
+							header: '단과대학',
+							filter : 'select',
+							name: 'COL_NM'
+						},
+						{
+							header: '학과',
+							filter : 'select',
+							name: 'DEP_NM'
+						},
+						{
+							header: '학년',
+							filter : 'select',
+							name: 'STU_YR'
+						},
+						{
+							header: '학기',
+							filter : 'select',
+							name: 'STU_SEM'
+						},
+						{
+							header: '이름',
+							name: 'MEM_NM'
+						},
+						{
+							header: '성적',
+							name: 'TOTAL_AVG'
+						},
+						{
+							header: '등수',
+							name: 'RANKING',
+							//hidden: 1
+						},
+						{
+							header: '장학금',
+							name: 'SCHOLARSHIP'
+							
+						}
+					],
+					
+					
+				});
+				
+				grid.on('click', function(object){
+					stuCd = grid.getRow(object.rowKey).STU_CD;
+					console.log(stuCd);
+					
+					$.ajax({
+						url : "/scholarship/getLectureGrade",
+				 		method : "POST",
+				 		dataType : "json",
+				 		data : {stuCd : stuCd},
+				 		success : function(result){
+				 			var str = "";
+				 			$('#detail').empty();
+				 			$.each(result, function(i,v){
+				 				console.log(result);
+				 				str += "<tr><td>"+v.CREDIT+"</td><td>"+v.CATE+"</td>";
+				 				str += "<td>"+v.LECTURE+"</td><td>"+v.GRADE+"</td></tr>";
+				 			});
+				 			$('#detail').append(str);
+				 		}
+					})
+					
+				})
+			}
+		})
+	}
+	
+	
+	
+	
+	gridList();
+	
+	$('#btn1').on('click',function(){
+		console.log(dataSet);
+		$.ajax({
+			url : "/scholarship/insertGradeScl",
+			type : "POST",
+			data : JSON.stringify(dataSet),
+			dataType:'json',
+			contentType: 'application/json',
+			success : function(result){
+             	if(result>0){
+             	alert("성적장학금이 수여되었습니다.");
+             	}
+             }
+		})
+	})
+	
+})
+</script>
+</head>
+<body>
+<!-- <div id="check">테스트</div> -->
+<input type="button" id="btn1" value="장학금 수여"> 
+<div id="grid"></div>
+<div>
+	<table border='1'>
+		<thead>
+			<tr>
+				<td>학점</td>
+				<td>강의구분</td>
+				<td>강의명</td>
+				<td>성적</td>
+			</tr>				
+		</thead>
+		<tbody id="detail">
+		</tbody>
+	</table>
+</div>
+</body>
+</html>

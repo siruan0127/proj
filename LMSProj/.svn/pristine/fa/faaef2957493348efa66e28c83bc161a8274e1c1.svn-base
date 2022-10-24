@@ -1,0 +1,45 @@
+package kr.ac.lms.vo;
+
+import java.util.Date;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import lombok.Data;
+
+@Data
+public class RecordVO {
+	private int recCd;
+	private int stuCd;
+	private String recCate;
+	private int recYr;
+	private int recSem;
+	private int recPer;
+	private String recRsn;
+	@DateTimeFormat(pattern = "yyyymmdd")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd",  timezone = "Asia/Seoul")
+	private Date recDt; // 신청 일시
+	private int recYn;
+	private String recNrsn;
+	
+	private int rnum;
+	private String comdNm;
+	private int cnt;
+	private int rownum;
+	private int year;
+	private int hak;
+	private String endExpect;
+	
+	// 필요한 변수 추가(윤미)
+	// 신청 년도 + 학기
+	private String recYrnsem;
+	// 승인 여부
+	private String trecTn;
+	
+	// 신청 일자
+	private String recDts;
+	
+	// 학생정보
+	private MemberVO memberVO;
+}

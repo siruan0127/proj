@@ -1,0 +1,63 @@
+package kr.ac.lms.vo;
+
+import java.util.Date;
+
+public class TaskVO {
+	private int taskCd;
+	private int lecCd;
+	private String taskNm;
+	private String taskCon;
+	private Date taskSt;
+	private Date taskEt;
+	private String taskFnm;
+	public int getTaskCd() {
+		return taskCd;
+	}
+	public void setTaskCd(int taskCd) {
+		this.taskCd = taskCd;
+	}
+	public int getLecCd() {
+		return lecCd;
+	}
+	public void setLecCd(int lecCd) {
+		this.lecCd = lecCd;
+	}
+	public String getTaskNm() {
+		return taskNm;
+	}
+	public void setTaskNm(String taskNm) {
+		this.taskNm = taskNm;
+	}
+	public String getTaskCon() {
+		return taskCon;
+	}
+	public void setTaskCon(String taskCon) {
+		this.taskCon = taskCon;
+	}
+	public Date getTaskSt() {
+		return taskSt;
+	}
+	public void setTaskSt(Date taskSt) {
+		this.taskSt = taskSt;
+	}
+	public Date getTaskEt() {
+		return taskEt;
+	}
+	public void setTaskEt(Date taskEt) {
+		this.taskEt = taskEt;
+	}
+	public String getTaskFnm() {
+		return taskFnm;
+	}
+	public void setTaskFnm(String taskFnm) {
+		this.taskFnm = taskFnm;
+	}
+	@Override
+	public String toString() {
+		return "TaskVO [taskCd=" + taskCd + ", lecCd=" + lecCd + ", taskNm=" + taskNm + ", taskCon=" + taskCon
+				+ ", taskSt=" + taskSt + ", taskEt=" + taskEt + ", taskFnm=" + taskFnm + "]";
+	}
+
+	
+	
+}

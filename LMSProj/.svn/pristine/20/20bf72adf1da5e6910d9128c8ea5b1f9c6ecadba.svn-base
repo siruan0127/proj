@@ -1,0 +1,56 @@
+package kr.ac.lms.vo;
+
+import java.util.Date;
+
+public class StuTestVO {
+	private int stCd;
+	private int testCd;
+	private int lecCd;
+	private int stuCd;
+	private int stScore;
+	private Date stDt;
+	
+	public Date getStDt() {
+		return stDt;
+	}
+	public void setStDt(Date stDt) {
+		this.stDt = stDt;
+	}
+	public int getStCd() {
+		return stCd;
+	}
+	public void setStCd(int stCd) {
+		this.stCd = stCd;
+	}
+	public int getTestCd() {
+		return testCd;
+	}
+	public void setTestCd(int testCd) {
+		this.testCd = testCd;
+	}
+	public int getLecCd() {
+		return lecCd;
+	}
+	public void setLecCd(int lecCd) {
+		this.lecCd = lecCd;
+	}
+	public int getStuCd() {
+		return stuCd;
+	}
+	public void setStuCd(int stuCd) {
+		this.stuCd = stuCd;
+	}
+	public int getStScore() {
+		return stScore;
+	}
+	public void setStScore(int stScore) {
+		this.stScore = stScore;
+	}
+	@Override
+	public String toString() {
+		return "StuTestVO [stCd=" + stCd + ", testCd=" + testCd + ", lecCd=" + lecCd + ", stuCd=" + stuCd + ", stScore="
+				+ stScore + ", stDt=" + stDt + "]";
+	}
+	
+	
+}

@@ -1,0 +1,28 @@
+package kr.ac.lms.mapper;
+
+import java.util.HashMap;
+import java.util.List;
+
+import kr.ac.lms.vo.CommonDetailVO;
+import kr.ac.lms.vo.CounselVO;
+
+public interface CounselMapper {
+	//카테리스트 불러오기
+	public List<CommonDetailVO> cate();
+	//학생 상담내역 불러오기
+	public List<HashMap<String,Object>> history(int stuCd);
+	//학생 상담 신청
+	public int save(CounselVO vo);
+	
+	//학생 상담내역 하나 불러오기
+	public HashMap<String, Object> detail(String cnslCd);
+	
+	//교수 상담내역 불러오기
+	public List<HashMap<String,Object>> proHistory(int proCd);
+	
+	//교수 상담 답장하기
+	public int reply(CounselVO vo);
+	
+	//학생 상담 수정
+	public int modify(CounselVO vo);
+}

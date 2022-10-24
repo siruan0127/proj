@@ -1,0 +1,155 @@
+package kr.ac.lms.controller;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.ac.lms.service.RecordApplyService;
+import kr.ac.lms.vo.MemberVO;
+import kr.ac.lms.vo.RecordVO;
+import kr.ac.lms.vo.StudentVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequestMapping("/record")
+@Controller
+public class RecordApplyController {
+	
+	@Inject
+	RecordApplyService recordAapplyService;
+	
+	@GetMapping("/apply")
+	public String apply(HttpServletRequest request, @ModelAttribute RecordVO recordVO,
+			@ModelAttribute StudentVO studentVO, @ModelAttribute MemberVO memberVO,
+			Model model, @RequestParam Map<String, String> map) {
+		//HttpSession session = request.getSession();
+		
+		recordVO.setStuCd(20170723);
+		studentVO.setStuCd(20170723);
+		memberVO.setMemCd(20170723);
+		
+		//신상정보 불러오기
+		List<MemberVO> stuInfoList = this.recordAapplyService.stuInfoList(memberVO);
+		log.info("stuInfoList : " + stuInfoList);
+		
+		model.addAttribute("data", stuInfoList);
+		
+		//학적변동이력 불러오기
+		List<RecordVO> historyList = this.recordAapplyService.history(memberVO);
+		if(historyList != null) {
+			   log.info("list : " + historyList.get(0).toString());
+		}
+		log.info("historyList : " + historyList);
+		log.info("historyList.size() : " + historyList.size());
+		
+		model.addAttribute("history", historyList);
+		
+		//신청/승인이력 건수 불러오기
+		int countResult = this.recordAapplyService.countResult(memberVO);
+		model.addAttribute("cnt", countResult);
+		
+		return "record/apply";
+	}
+	
+	@ResponseBody
+	@PostMapping("/detailHistory")
+	public RecordVO detailHistory(@RequestBody Map<String, Object> map, Model model) {
+		
+		log.info("학적변동 상세이력 map : " + map);
+		
+		//학적변동 상세이력 불러오기
+		List<RecordVO> recordHistory = this.recordAapplyService.detailHisoty(map);
+		RecordVO record = recordHistory.get(0);
+		log.info("recordHistory : " + recordHistory);
+		
+		model.addAttribute("recordHistory", recordHistory);
+		
+		return record;
+	}
+	
+	@ResponseBody
+	@PostMapping("/saveRecord")
+	public int saveRecord(@RequestBody Map<String, Object> map) {
+		log.info("saveRecord에 왔다!");
+		
+		log.info("saveRecord map : " + map);
+		
+		//학적변동 저장하기
+		int cnt = this.recordAapplyService.insertRecord(map);
+		log.info("cnt : " + cnt);
+		
+		return cnt;
+	}
+	
+	@ResponseBody
+	@PostMapping("/counselCnt")
+	public int counselCnt(@RequestBody Map<String, Object> map) {
+		log.info("counselCnt에 왔다!");
+		
+		int cnt = this.recordAapplyService.counselCnt(map);
+		log.info("Counselcnt :" + cnt);
+		
+		return cnt;
+	}
+	
+	@ResponseBody
+	@PostMapping("/firstData")
+	public RecordVO firstData(@RequestBody Map<String, Object> map) {
+		List<RecordVO> recordHistory = this.recordAapplyService.detailHisoty(map);
+		RecordVO record = recordHistory.get(0);
+		
+		log.info("firstData record : " + record);
+		
+		return record;
+	}
+	
+	@GetMapping("/dropApply")
+	public String dropApply(HttpServletRequest request, @ModelAttribute RecordVO recordVO,
+			@ModelAttribute StudentVO studentVO, @ModelAttribute MemberVO memberVO,
+			Model model, @RequestParam Map<String, String> map) {
+		//HttpSession session = request.getSession();
+		memberVO.setMemCd(20170723);
+		
+		//신상정보 불러오기
+		List<MemberVO> stuInfoList = this.recordAapplyService.stuInfoList(memberVO);
+		log.info("stuInfoList : " + stuInfoList);
+		
+		model.addAttribute("data", stuInfoList);
+		
+		//학적변동이력 불러오기
+		List<RecordVO> historyList = this.recordAapplyService.history(memberVO);
+		if(historyList != null) {
+			   log.info("list : " + historyList.get(0).toString());
+		}
+		log.info("historyList : " + historyList);
+		
+		model.addAttribute("history", historyList);
+		
+		//신청/승인이력 건수 불러오기
+		int countResult = this.recordAapplyService.countResult(memberVO);
+		model.addAttribute("cnt", countResult);
+		
+		return "record/dropApply";
+	}
+	
+	@PostMapping("/dropSave")
+	public String dropSave() {
+		return "record/dropSave";
+	}
+
+	
+	
+}

@@ -1,0 +1,68 @@
+package kr.ac.lms.service;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.ac.lms.vo.LecApplyVO;
+import kr.ac.lms.vo.LecNoticeVO;
+import kr.ac.lms.vo.MemberVO;
+import kr.ac.lms.vo.TestQVO;
+import kr.ac.lms.vo.TestVO;
+import kr.ac.lms.vo.WeekplanVO;
+
+public interface ProfessorLectureService {
+
+	// 교수 통합 정보
+	public List<MemberVO> getPro();
+
+	// 교수 강의 대시보드
+	// int proCd
+	public List<LecApplyVO> getProLecList(int proCd);
+	
+	// 강의 공지사항 목록
+	public List<LecNoticeVO> lecNotList(int lecCd);
+
+	// 강의 목록 > 년도 검색
+	public List<LecApplyVO> getLecaYr(int proCd);
+	
+	// 강의 목록 > 학기 검색
+	public List<LecApplyVO> getLecaSem(Map<String, Object> lecaSemMap);
+	
+	// 교수 강의실 이동
+	public LecApplyVO getProLecOne(int lecCd);
+
+	// 강의 공지사항 상세
+	public LecNoticeVO lecNotDetail(int lntcCd);
+
+	// 강의 공지사항 등록
+	public int lecNotInsert(LecNoticeVO lecNoticeVO);
+
+	// 강의 공지사항 수정
+	public int lecNotUpdate(LecNoticeVO lecNoticeVO);
+
+	// 강의 공지사항 삭제
+	public int lecNotDelete(int lntcCd);
+
+	// 수업 계획서
+	public LecApplyVO getLecApply(Map<String, Object> lecApply);
+	
+	// 수업 계획서 > 주차별 강의 내용
+	public List<WeekplanVO> getWeekPlan(int lecaCd);
+
+	// 퀴즈 게시판 조회
+	public List<TestVO> quizBoardList(int lecCd);
+
+	// 교수 퀴즈 상세 조회
+	public TestVO quizDetail(int testCd);
+
+	// 퀴즈 생성(null로 insert)
+	public int quizInsert(TestVO testVO);
+
+	// 퀴즈 생성(null값을 update)
+	public int quizInsertUpdate(TestVO testVO);
+
+	// 퀴즈 상세 생성
+	public int quizQInsert(List<TestQVO> testQVOList);
+
+	
+}

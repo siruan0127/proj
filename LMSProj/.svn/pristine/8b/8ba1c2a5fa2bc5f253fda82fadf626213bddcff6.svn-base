@@ -1,0 +1,23 @@
+package kr.ac.lms.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.ac.lms.mapper.StudentLectureMapper;
+import kr.ac.lms.service.StudentLectureService;
+import kr.ac.lms.vo.LecApplyVO;
+
+@Service
+public class StudentLectureServiceImpl implements StudentLectureService{
+
+	@Autowired
+	StudentLectureMapper studentLectureMapper;
+	
+	// 학생 대시보드
+	@Override
+	public List<LecApplyVO> getStuLecList (int stuCd){
+		return this.studentLectureMapper.getStuLecList(stuCd);
+	}
+}

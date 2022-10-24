@@ -1,0 +1,39 @@
+package kr.ac.lms.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import kr.ac.lms.mapper.PortletMapper;
+import kr.ac.lms.service.PortletService;
+import kr.ac.lms.vo.MemberVO;
+import kr.ac.lms.vo.PortletVO;
+
+@Service
+public class PortletServiceImpl implements PortletService{
+
+	@Inject
+	PortletMapper portletMapper;
+	
+	//유저별 포틀릿 화면 저장
+	@Override
+	public int updateSave(Map<String, Object> map) {
+		return this.portletMapper.updateSave(map);
+	}
+
+	//유저별 포틀릿 화면 보여주기
+	@Override
+	public List<PortletVO> portletSelect(MemberVO memberVO) {
+		return this.portletMapper.portletSelect(memberVO);
+	}
+
+	//유저가 선택안한 포틀릿 목록 보여주기
+	@Override
+	public List<PortletVO> portletNotSelect(MemberVO memberVO) {
+		return this.portletMapper.portletNotSelect(memberVO);
+	}
+
+}

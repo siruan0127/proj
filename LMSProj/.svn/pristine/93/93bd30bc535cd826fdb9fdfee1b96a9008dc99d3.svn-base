@@ -1,0 +1,39 @@
+package kr.ac.lms.vo;
+
+public class NoticeFileVO {
+	private int ntcfCd;
+	private int ntcCd;
+	private String ntcfNm;
+	private String ntcfPt;
+	public int getNtcfCd() {
+		return ntcfCd;
+	}
+	public void setNtcfCd(int ntcfCd) {
+		this.ntcfCd = ntcfCd;
+	}
+	public int getNtcCd() {
+		return ntcCd;
+	}
+	public void setNtcCd(int ntcCd) {
+		this.ntcCd = ntcCd;
+	}
+	public String getNtcfNm() {
+		return ntcfNm;
+	}
+	public void setNtcfNm(String ntcfNm) {
+		this.ntcfNm = ntcfNm;
+	}
+	public String getNtcfPt() {
+		return ntcfPt;
+	}
+	public void setNtcfPt(String ntcfPt) {
+		this.ntcfPt = ntcfPt;
+	}
+	@Override
+	public String toString() {
+		return "NoticeFileVO [ntcfCd=" + ntcfCd + ", ntcCd=" + ntcCd + ", ntcfNm=" + ntcfNm + ", ntcfPt=" + ntcfPt
+				+ "]";
+	}
+	
+	
+}

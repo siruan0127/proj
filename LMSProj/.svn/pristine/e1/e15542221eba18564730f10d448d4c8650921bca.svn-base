@@ -1,0 +1,65 @@
+@charset "UTF-8";
+#personalInfo, #courseInfo {
+	border : 1px solid lightgray;
+	margin : 10px;
+	padding : 10px;
+}
+label {
+	margin : 10px;
+}
+#beRed {
+	color : rgb(225, 39, 64);
+	font-weight : bold;
+}
+.pregisterCnt {
+	display : inline-block;
+	width : 100px;
+	padding-left : 15px;
+}	
+.addBtn{
+	background : #475b99;
+	border: 0.5px solid #777;
+	color : #fff;
+	padding:3px;
+	padding-left : 5px;
+	padding-right : 5px;
+	font-weight : bold;
+}
+.delBtn{
+	background : #f4f4f4;
+	color : #e05a5a;
+	font-weight : bold;
+	border : 0.3px solid #999;
+	padding:3px;
+	padding-left : 5px;
+	padding-right : 5px;
+}
+.delBtn2 {
+	background : #f4f4f4;
+	color : #475b99;
+	font-weight : bold;
+	border : 0.3px solid #999;
+	padding:3px;
+	padding-left : 5px;
+	padding-right : 5px;
+}
+.registerCnt {
+	display : inline-block;
+	width : 100px;
+	padding-left : 15px;
+}
+#showTimeTable th, td {
+	width : 60px;
+	text-align : center;
+}
+#showTimeTable th {
+	background-color : rgb(244, 247, 253);
+}
+#showTimeTable td{
+	height: 35px;
+}
+#timeTableDiv {
+	width : 400px;
+	padding-left : 30px;
+	margin-right : 50px;
+}

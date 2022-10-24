@@ -1,0 +1,31 @@
+package kr.ac.lms.vo;
+
+import java.util.Date;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import lombok.Data;
+
+@Data
+public class ApprovalVO {
+
+	private int apprCd;
+	private String apprMem;
+	@DateTimeFormat(pattern = "yyyymmdd")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+	private Date apprDt;
+	private int apprYn;
+	private String apprRsn;
+	private int apprCate;
+	@DateTimeFormat(pattern = "yyyymmdd")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+	private Date apprAdt;
+	
+	//임의로 컬럼 추가(가은)
+	private String apprYnYn;
+	private String apprGubun;
+	
+	
+}

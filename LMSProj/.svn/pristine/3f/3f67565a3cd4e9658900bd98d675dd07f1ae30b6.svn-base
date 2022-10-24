@@ -1,0 +1,26 @@
+package kr.ac.lms.vo;
+
+public class WishVO {
+	private int lecCd;
+	private int stuCd;
+	
+	public int getLecCd() {
+		return lecCd;
+	}
+	public void setLecCd(int lecCd) {
+		this.lecCd = lecCd;
+	}
+	public int getStuCd() {
+		return stuCd;
+	}
+	public void setStuCd(int stuCd) {
+		this.stuCd = stuCd;
+	}
+	
+	@Override
+	public String toString() {
+		return "WishVO [lecCd=" + lecCd + ", stuCd=" + stuCd + "]";
+	}
+	
+	
+}

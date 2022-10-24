@@ -1,0 +1,124 @@
+package kr.ac.lms.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.ac.lms.service.RecordApprovalService;
+import kr.ac.lms.vo.RecordVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequestMapping("/recordApproval")
+@Controller
+public class RecordApprovalController {
+
+	@Autowired
+	private RecordApprovalService recordApprovalService;
+	
+	// 휴/복학 관리 페이지 
+	@GetMapping("/hyubokhak")
+	public String hyubokhak() {
+		log.info("== hyubokhak ==");
+		
+		return "record/hyubokhak";
+	}
+	
+	// 휴/복학 신청 내역 출력- 0
+	@ResponseBody
+	@PostMapping("/getHyubokhakRecord")
+	public List<RecordVO> getHyubokhakRecord(){
+		log.info("== getHyubokhakRecord ==");
+		
+		List<RecordVO> recordList = this.recordApprovalService.getRecordList(0);
+		log.info("recordList >> " + recordList);
+		
+		return recordList;
+	}
+	
+	// 자퇴 관리 페이지 
+	@GetMapping("/jatoe")
+	public String jatoe() {
+		log.info("== jatoe ==");
+		
+		return "record/jatoe";
+	}
+	
+	// 자퇴 신청 내역 출력 - 2
+	@ResponseBody
+	@PostMapping("/getJatoeRecord")
+	public List<RecordVO> getJatoeRecord(){
+		log.info("== getJatoeRecord ==");
+		
+		List<RecordVO> recordList = this.recordApprovalService.getRecordList(1);
+		log.info("recordList >> " + recordList);
+		
+		return recordList;
+	}
+	
+	// 졸업 관리 페이지
+	@GetMapping("/joleop")
+	public String joleop() {
+		log.info("== joleop ==");
+		
+		return "record/joleop";
+	}
+	
+	// 졸업 신청 내역 출력 - 1
+	@ResponseBody
+	@PostMapping("/getJoleopRecord")
+	public List<RecordVO> getJoleopRecord(){
+		log.info("== getJoleopRecord ==");
+		
+		List<RecordVO> recordList = this.recordApprovalService.getRecordList(2);
+		log.info("recordList >> " + recordList);
+		
+		return recordList;
+	}
+	
+	
+	/**
+	 * 학적 신청 상세 보기
+	 * @param recCd
+	 * @return
+	 */
+	@ResponseBody
+	@PostMapping("/recordDetail")
+	public RecordVO recordDetail(int recCd) {
+		log.info("== recordDetail ==");
+		
+		RecordVO recordVO = this.recordApprovalService.recordDetail(recCd);		
+		log.info("recordVO >> " + recordVO);
+		
+		return recordVO;
+	}
+	
+	@ResponseBody
+	@PostMapping("/updateY")
+	public int updateY(int recCd) {
+		log.info("== updateY ==");
+		
+		int result = this.recordApprovalService.updateY(recCd);
+		
+		return result;
+	}
+	
+	@ResponseBody
+	@PostMapping("/updateN")
+	public int updateN(RecordVO recordVO) {
+		log.info("== updateN ==");
+		
+		log.info("recordVO >> " + recordVO);
+		
+		int result = this.recordApprovalService.updateN(recordVO);
+		
+		return result;
+	}
+}

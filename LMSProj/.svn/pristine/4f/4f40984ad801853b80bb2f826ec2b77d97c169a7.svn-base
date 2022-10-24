@@ -1,0 +1,19 @@
+package kr.ac.lms.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.ac.lms.vo.EvaluationQVO;
+import kr.ac.lms.vo.LecApplyVO;
+
+public interface LecEvaluationMapper {
+	
+	//학생 강의평가 중 현재학기 강의 조회
+	public List<LecApplyVO> stuLecList(int stuCd);
+
+	//강의 평가 항목 불러오기
+	public List<EvaluationQVO> selectEvalItem();
+	
+	//학생 강의평가 저장
+	public int insertStuEval(Map<String, Object> map);
+}

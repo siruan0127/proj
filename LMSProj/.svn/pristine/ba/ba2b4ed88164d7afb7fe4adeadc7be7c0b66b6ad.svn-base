@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ac.lms.mapper.ScheduleMapper">
+
+	<!-- 개인일정 조회 -->
+	<select id="allSchedule" resultType="scheduleVO" parameterType="int">
+		SELECT * FROM SCHEDULE WHERE MEM_CD = #{memCd}
+	</select>
+	
+	<!-- 개인일정 등록 -->
+	<insert id="insert" parameterType="scheduleVO">
+	INSERT INTO schedule (
+    SCH_CD
+    , MEM_CD
+    , SCH_TTL
+    , SCH_ST
+    , SCH_EN
+    , SCH_COLOR
+    , SCH_CON
+	) VALUES (
+	    SCHEDULE_SEQ.NEXTVAL
+	  , #{memCd}
+	  , #{schTtl}
+	  , TO_DATE(#{schSt},'YYYY-MM-DD HH24:MI')
+	  , TO_DATE(#{schEn},'YYYY-MM-DD HH24:MI')
+	  , #{schColor}
+	  , #{schCon}
+	)
+	</insert>
+	
+	<!-- 개인일정 삭제 -->
+	<delete id="delete" parameterType="int">
+		DELETE FROM SCHEDULE WHERE SCH_CD = #{schCd}
+	</delete>
+	
+	<!-- 개인일정 불러오기 -->
+	<select id="findCon" parameterType="int" resultType="scheduleVO">
+		SELECT SCH_CON
+		,TO_CHAR(SCH_ST,'YYYY-MM-DD HH24:MI') AS SCH_ST
+		,TO_CHAR(SCH_EN,'YYYY-MM-DD HH24:MI') AS SCH_EN
+		FROM SCHEDULE WHERE SCH_CD = #{schCd}
+	</select>
+	
+	<!-- 개인일정 내용변경 -->
+	<update id="updateCon" parameterType="scheduleVO">
+		UPDATE SCHEDULE
+		SET SCH_TTL = #{schTtl}
+		, SCH_CON = #{schCon}
+		, SCH_ST = TO_DATE(#{schSt},'YYYY-MM-DD HH24:MI')
+		, SCH_EN = TO_DATE(#{schEn},'YYYY-MM-DD HH24:MI')
+		, SCH_COLOR = #{schColor}
+		WHERE SCH_CD = #{schCd}
+	</update>
+  
+	
+	<!-- 개인일정 날짜변경 -->
+	
+</mapper>

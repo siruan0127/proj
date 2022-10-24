@@ -1,0 +1,56 @@
+package kr.ac.lms.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.ac.lms.vo.ApprovalVO;
+import kr.ac.lms.vo.BuildingVO;
+import kr.ac.lms.vo.LecApplyVO;
+import kr.ac.lms.vo.MemberVO;
+import kr.ac.lms.vo.RoomVO;
+import kr.ac.lms.vo.WeekplanVO;
+
+public interface ApprovalMapper{
+	
+	//교수 결재 리스트 조회
+	public List<LecApplyVO> proApprovalList(int memCd);
+	
+	//교수 결재 검색리스트 조회
+	public List<LecApplyVO> proApprovalSearchList(Map<String, Object> map);
+	
+	//교수 결재 강의계획서 pdf
+	public LecApplyVO proApprovalPdf(Map<String, Object> map);
+	
+	//교수 결재 반려 내역 조회
+	public List<LecApplyVO> returnHistory(int memCd);
+	
+	// 수업 계획서
+	public LecApplyVO getLecApply(Map<String, Object> lecApply);
+	
+	// 수업 계획서 > 주차별 강의 내용
+	public List<WeekplanVO> getWeekPlan(int lecaCd);
+	
+	//학사관리자 전체 결재 목록 조회(강의계획서)
+	public List<LecApplyVO> managerApprovalList(Map<String, String> map);
+	
+	//학사관리자 전체 결재 목록 조회(장학생신청)
+	public List<LecApplyVO> managerApprovalListS(Map<String, String> map);
+	
+	//날짜 계산
+	public Map<String, Object> dateCal();
+	
+	//학사관리자 강의계획서 결재 리스트
+	public List<LecApplyVO> mgrLecApprovalList();
+	
+	//학사관리자 강의계획서 결재 중 반려사유 update
+	public int lecApplyNoUpdate(Map<String, Object> map);
+	
+	//강의실 배정 중 단과대 건물명 리스트 출력 
+	public List<BuildingVO> buildingList();
+	
+	//강의실 배정 중 단과대 별 호실 리스트 출력
+	public List<RoomVO> roomList(String bldNm);
+	
+	//강의실 배정 중 LEC_CD를 통한 교수 및 강의 정보 출력
+	public LecApplyVO lecInfoSelect(int lecaCd);
+}

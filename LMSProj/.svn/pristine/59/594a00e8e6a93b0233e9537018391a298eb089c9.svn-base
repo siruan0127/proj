@@ -1,0 +1,199 @@
+
+*{
+  margin:0px;
+  padding:0px;
+  color : #000;
+}
+ul,li{
+  list-style:none;
+}
+a{
+  color:inherit;
+  text-decoration:none;
+}
+#allRound{
+	height : 100%;
+	margin-left : auto;
+	margin-right : auto;
+}
+h2{
+	font-weight : bold;
+	margin-left : 50px;
+}
+#subtitle{
+	margin-top : 20px;
+	margin-left : 100px;
+}
+input{
+	text-align : center;
+}
+#image_container{
+	
+	width : 120px;
+	height : 150px;
+	border : 1px solid #777;
+	border-radius : 15px;
+	margin-left : 100px;
+}
+.profileImg,.profile{
+	width : 120px;
+	height : 150px;
+	border : 1px solid #777;
+	border-radius : 15px;
+}
+.profileImg{
+	position : relative;
+	bottom : 150px;
+}
+#uploadForm{
+	margin-left : 100px;
+}
+#uploadBtn{
+	display: inline-block;
+	color : #001353;
+	background : white;
+	border : 2px solid #001353;
+	padding : 10px;
+	border-radius : 10px;
+	font-weight: bold;
+	position : relative;
+	left : 138px;
+	bottom : 42px;
+	cursor : pointer;
+}
+#uploadBtn:hover{
+	color : #fff;
+	background : #001353;
+	
+}
+#saveProfile{
+	width : 75px;
+	color : #fff;
+	background : #001353;
+	padding : 10px;
+	border-radius : 10px;
+	font-weight: bold;
+	position : relative;
+	left : 150px;
+	bottom : 40px;
+	cursor : pointer;
+}
+#saveProfile:hover{
+	color : #001353;
+	background : white;
+}
+input[type=password]{
+	height : 30px;
+	
+}
+#changePw{
+	display : float;
+	float:left;
+	position : relative;
+	left : 730px;
+	bottom : 240px;
+}
+#changePw input{
+	width : 250px;
+	height : 40px;
+	border-radius : 8px;
+	border : 1px solid #777777;
+	margin-top : 10px;
+}
+#changePwBtn{
+	display: inline-block;
+	margin-top : 10px;
+	color : #fff;
+	background : #001353;
+	padding : 10px;
+	border-radius : 10px;
+	font-weight: bold;
+	cursor : pointer;
+	position : relative;
+	left : 270px;
+	bottom : 50px;
+	width : 100px;
+}
+#changePwBtn:hover{
+	color : #001353;
+	background : white;
+	border : 2px solid #001353;
+	
+}
+#updateInfo{
+	clear : both;
+	position : relative;
+	bottom : 140px;
+	left : 20px;
+}
+
+.myPageLab{
+	display:inline-block;
+	width : 130px;
+	padding : 8px;
+	margin-bottom : 35px;
+	margin-left : 30px;
+	font-size : 14pt;
+}
+.myPageLab + input, .myPageLab+select{
+	height : 40px;
+	width : 200px;
+	border-radius : 10px;
+	border : 0.5px solid #777777;
+}
+.myPageLab+select{
+	width : 200px;
+}
+#secondh2{
+	padding : 10px;
+}
+#secondh2,#record{
+	position : relative;
+	bottom : 80px;
+}
+#record{
+	text-align : center;
+	width : 1100px;
+	margin-left : 50px;
+	border : 1px solid #001353;
+    border-collapse: separate;
+    border-left: 0;
+    border-radius: 10px;
+    border-spacing: 0px;
+}
+#record th, #record td{
+	padding: 5px 4px 6px 4px;
+    vertical-align: top;
+    border-left: 1px solid #001353;
+}
+#record th{
+	background : #001353;
+	color : white;
+	padding : 8px;
+}
+#record td{
+	background : white;
+	font-weight : bold;
+	color : black;
+	padding : 10px;
+}
+thead:first-child tr:first-child th:first-child, tbody:first-child tr:first-child td:first-child {
+    border-radius: 10px 0 0 0;
+}
+thead:last-child tr:last-child th:first-child, tbody:last-child tr:last-child td:first-child {
+    border-radius: 0 0 0 10px;
+}
+td span{
+	font-size : 11pt;
+	font-weight : bold;
+}
+
+
+
+
+
+
+
+
+
+

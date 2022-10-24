@@ -1,0 +1,136 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<style>
+.left-side-menu {
+	padding-top: 6%;
+}
+</style>
+<div class="left-side-menu">
+	<div class="h-100" id="left-side-menu-container" data-simplebar>
+		<!--- Sidemenu -->
+		<ul class="metismenu side-nav">
+			<li class="side-nav-item">
+				<a href="javascript: void(0);" class="side-nav-link">
+					<span>결재 </span><span class="menu-arrow"></span>
+					</a>
+				<ul class="side-nav-second-level" aria-expanded="false">
+					<li><a href="/approval/managerApprovalListGet">결재 조회</a></li>
+					<li><a href="/approval/mgrlecApproval">강의계획서결재</a></li>
+					<li><a href="#">장학금결재</a></li>
+				</ul>
+			</li>
+			<li class="side-nav-item">
+				<a href="javascript: void(0);" class="side-nav-link">
+					<span>마이페이지 </span><span class="menu-arrow"></span>
+					</a>
+				<ul class="side-nav-second-level" aria-expanded="false">
+					<li><a href="#">신상정보</a></li>
+					<li><a href="#">개인일정관리</a></li>
+				</ul>
+			</li>
+			
+			<li class="side-nav-item">
+				<a href="javascript: void(0);" class="side-nav-link">
+					<span>행정관리 </span><span class="menu-arrow"></span>
+				</a>
+				<ul class="side-nav-second-level" aria-expanded="false">
+					<li class="side-nav-item">
+						<a href="javascript: void(0);" aria-expanded="false">공지사항 및 팝업 <span class="menu-arrow"></span></a>
+						<ul class="side-nav-third-level" aria-expanded="false">
+							<li><a href="javascript: void(0);">공지사항 관리</a></li>
+							<li><a href="/popup/list">팝업 관리</a></li>
+						</ul>
+					<li><a href="#">학사일정</a></li>
+				</ul>
+			</li>
+			
+			<li class="side-nav-item">
+				<a href="javascript: void(0);" class="side-nav-link">
+					<span>학생관리 </span><span class="menu-arrow"></span>
+					</a>
+				<ul class="side-nav-second-level" aria-expanded="false">
+<!-- 					<li><a href="#">신입생등록</a></li> -->
+					<li><a href="/management/stuList">학생목록조회</a></li>
+					<li><a href="/recordApproval/hyubokhak">휴복학관리</a></li>
+					<li><a href="/recordApproval/joleop">졸업관리</a></li>
+					<li><a href="/recordApproval/jatoe">자퇴관리</a></li>
+				</ul>
+			</li>
+			
+			<li class="side-nav-item">
+				<a href="javascript: void(0);" class="side-nav-link">
+					<span>등록 및 장학 </span><span class="menu-arrow"></span>
+				</a>
+				<ul class="side-nav-second-level" aria-expanded="false">
+					<li class="side-nav-item">
+						<a href="javascript: void(0);" aria-expanded="false">등록금 <span class="menu-arrow"></span></a>
+						<ul class="side-nav-third-level" aria-expanded="false">
+							<li><a href="javascript: void(0);">등록금목록조회</a></li>
+							<li><a href="javascript: void(0);">등록금고지관리</a></li>
+							<li><a href="javascript: void(0);">등록금납부관리</a></li>
+						</ul>
+					</li>
+					<li class="side-nav-item">
+						<a href="javascript: void(0);" aria-expanded="false">장학금 <span class="menu-arrow"></span></a>
+						<ul class="side-nav-third-level" aria-expanded="false">
+							<li><a href="javascript: void(0);">장학금목록조회</a></li>
+							<li><a href="javascript: void(0);">장학금수여</a></li>
+							<li><a href="javascript: void(0);">장학생 조회</a></li>
+						</ul>
+					</li>
+				</ul>
+			</li>
+			
+			<li class="side-nav-item">
+				<a href="javascript: void(0);" class="side-nav-link">
+					<span>교수관리 </span><span class="menu-arrow"></span>
+					</a>
+				<ul class="side-nav-second-level" aria-expanded="false">
+<!-- 					<li><a href="#">교수등록</a></li> -->
+					<li><a href="/management/proList">교수목록조회</a></li>
+				</ul>
+			</li>
+			
+			<li class="side-nav-item">
+				<a href="javascript: void(0);" class="side-nav-link">
+					<span>강의관리 </span><span class="menu-arrow"></span>
+					</a>
+				<ul class="side-nav-second-level" aria-expanded="false">
+					<li><a href="#">강의계획서조회</a></li>
+					<li><a href="/course/list">수강편람</a></li>
+					<li><a href="/course/preList">당학기강의조회</a></li>
+				</ul>
+			</li>
+			
+			
+			<li class="side-nav-item">
+				<a href="javascript: void(0);" class="side-nav-link">
+					<span>평가 </span><span class="menu-arrow"></span>
+					</a>
+				<ul class="side-nav-second-level" aria-expanded="false">
+					<li><a href="#">강의평가조회</a></li>
+				</ul>
+			</li>
+			
+			<li class="side-nav-item">
+				<a href="javascript: void(0);" class="side-nav-link">
+					<span>시설 </span><span class="menu-arrow"></span>
+					</a>
+				<ul class="side-nav-second-level" aria-expanded="false">
+					<li><a href="#">시설신청 및 이력</a></li>
+				</ul>
+			</li>
+			
+			<li class="side-nav-item">
+                <a href="apps-calendar.html" class="side-nav-link">
+                    <span>중점지표 </span>
+                </a>
+            </li>
+		</ul>
+		<!-- End Sidebar -->
+
+		<div class="clearfix"></div>
+
+	</div>
+	<!-- Sidebar -left -->
+
+</div>

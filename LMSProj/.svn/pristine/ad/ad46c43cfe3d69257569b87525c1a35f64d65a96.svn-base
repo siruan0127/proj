@@ -1,0 +1,161 @@
+package kr.ac.lms.controller;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.ac.lms.service.PortletService;
+import kr.ac.lms.service.RecordApplyService;
+import kr.ac.lms.vo.MemberVO;
+import kr.ac.lms.vo.PortletVO;
+import kr.ac.lms.vo.RecordVO;
+import kr.ac.lms.vo.StudentVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("/main")
+public class mainController {
+	
+	@Inject
+	RecordApplyService recordAapplyService;
+	
+	@Inject
+	PortletService portletService;
+
+	//학생메인페이지로 이동
+	@GetMapping("/stuMainPage")
+	public String stuMainPage(HttpServletRequest request, @ModelAttribute RecordVO recordVO,
+			@ModelAttribute StudentVO studentVO, @ModelAttribute MemberVO memberVO,
+			Model model,HttpSession session) {
+		
+		
+		//포틀릿 설정------------------------------------------------------------------------
+		//HttpSession session = request.getSession();
+		recordVO.setStuCd(20170723);
+		studentVO.setStuCd(20170723);
+		memberVO.setMemCd(20170723);
+		
+		List<PortletVO> portletList = this.portletService.portletSelect(memberVO);
+		log.info("portletList : " + portletList);
+		
+//		String result = JSONArray.toJSONString(portletList);
+//		log.info("result : " +  result);
+		
+		model.addAttribute("list", portletList);
+		
+		
+		//학적변동이력 불러오기
+		List<RecordVO> historyList = this.recordAapplyService.history(memberVO);
+		if(historyList != null) {
+			   log.info("list : " + historyList.get(0).toString());
+		}
+		log.info("historyList : " + historyList);
+		model.addAttribute("history", historyList);
+		
+		
+		return "main/stuMainPage";
+	}
+	
+	
+	//교수 메인페이지로 이동
+	@GetMapping("/proMainPage")
+	public String proMainPage(HttpSession session) {
+		return "main/proMainPage";
+	}
+	
+	//학사관리자메인페이지로 이동
+	@GetMapping("/mgrMainPage")
+	public String mgrMainPage(HttpSession session) {
+		
+		return "main/mgrMainPage";
+	}
+	
+	@RequestMapping(value="/logout",method=RequestMethod.GET)
+	public String logout(HttpSession session)
+	{
+		session.invalidate();
+		log.info("logout-success");
+		return "redirect:/login/loginForm";
+	}
+	
+	@ResponseBody
+	@PostMapping("/portletSavePost")
+	public String portletSavePost(@RequestBody List<Map<String, Object>> param, Map<String, Object> map, Model model) {
+		String resultmsg = "";
+		
+		log.info("param : " + param);
+		//포틀릿 설정 저장
+		for(int i=0; i< param.size(); i++) {
+			log.info("param >> " + param.get(i));
+			
+			map.put("poX", param.get(i).get("x"));
+			map.put("poY", param.get(i).get("y"));
+			map.put("poW", param.get(i).get("w"));
+			map.put("poH", param.get(i).get("h"));
+			map.put("memCd", param.get(i).get("memCd"));
+			map.put("poCate", param.get(i).get("id"));
+			
+			log.info("sql문에 들어갈 param : " + map);
+		
+			
+			int cnt = this.portletService.updateSave(map);
+			
+			if(cnt > 0) {
+				resultmsg = "<script>alert('성공적으로 저장되었습니다');</script>";
+			}else {
+				resultmsg = "<script>alert('저장을 실패하였습니다');</script>";
+			}
+		}
+		
+		
+		return resultmsg;
+	}
+	
+	@GetMapping("/popupPortlet")
+	public String popupPortlet(@ModelAttribute StudentVO studentVO, @ModelAttribute MemberVO memberVO,
+								Model model) {
+		studentVO.setStuCd(20170723);
+		memberVO.setMemCd(20170723);;
+		
+		List<PortletVO> portletNotSelect = this.portletService.portletNotSelect(memberVO);
+		log.info("portletNotSelect : " + portletNotSelect);
+		log.info("portletNotSelect.size() : " + portletNotSelect.size());
+		
+		model.addAttribute("portletData", portletNotSelect);
+		
+		return "main/popupPortlet";
+	}
+	
+	/**
+	 * 통합정보 시스템 가는 메소드
+	 * @return 통합정보 시스템 view 위치
+	 */
+	@GetMapping("/ui")
+	public String ui() {
+		log.info("ui");
+		return "info/UI";
+	}
+	
+	@GetMapping("/qna")
+	public String QnA() {
+		log.info("qna");
+		return "/qna/qnaBoard";
+	}
+	
+
+}

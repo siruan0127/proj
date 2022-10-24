@@ -1,0 +1,81 @@
+package kr.ac.lms.vo;
+
+import java.util.Date;
+
+import lombok.Data;
+
+@Data
+public class CounselVO {
+
+	private int cnslCd;
+	private int stuCd;
+	private String cnslTtl;
+	private String cnslCon;
+	private Date cnslReg;
+	private Date cnslDt;
+	private String cnslRpl;
+	private String cnslYn;
+	private String cnslCate;
+	
+	public int getCnslCd() {
+		return cnslCd;
+	}
+	public void setCnslCd(int cnslCd) {
+		this.cnslCd = cnslCd;
+	}
+	public int getStuCd() {
+		return stuCd;
+	}
+	public void setStuCd(int stuCd) {
+		this.stuCd = stuCd;
+	}
+	public String getCnslTtl() {
+		return cnslTtl;
+	}
+	public void setCnslTtl(String cnslTtl) {
+		this.cnslTtl = cnslTtl;
+	}
+	public String getCnslCon() {
+		return cnslCon;
+	}
+	public void setCnslCon(String cnslCon) {
+		this.cnslCon = cnslCon;
+	}
+	public Date getCnslReg() {
+		return cnslReg;
+	}
+	public void setCnslReg(Date cnslReg) {
+		this.cnslReg = cnslReg;
+	}
+	public Date getCnslDt() {
+		return cnslDt;
+	}
+	public void setCnslDt(Date cnslDt) {
+		this.cnslDt = cnslDt;
+	}
+	public String getCnslRpl() {
+		return cnslRpl;
+	}
+	public void setCnslRpl(String cnslRpl) {
+		this.cnslRpl = cnslRpl;
+	}
+	public String getCnslYn() {
+		return cnslYn;
+	}
+	public void setCnslYn(String cnslYn) {
+		this.cnslYn = cnslYn;
+	}
+	public String getCnslCate() {
+		return cnslCate;
+	}
+	public void setCnslCate(String cnslCate) {
+		this.cnslCate = cnslCate;
+	}
+	
+	@Override
+	public String toString() {
+		return "CounselVO [cnslCd=" + cnslCd + ", stuCd=" + stuCd + ", cnslTtl=" + cnslTtl + ", cnslCon=" + cnslCon
+				+ ", cnslRpl=" + cnslRpl + ", cnslYn=" + cnslYn + ", cnslCate=" + cnslCate + "]";
+	}
+	
+}

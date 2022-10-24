@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ac.lms.mapper.ScheduleMapper">
+
+	<!-- 개인일정 조회 -->
+	<select id="allSchedule" resultType="scheduleVO" parameterType="int">
+		SELECT * FROM SCHEDULE WHERE MEM_CD = #{memCd}
+	</select>
+	
+	<!-- 개인일정 등록 -->
+	<insert id="insert" parameterType="scheduleVO">
+	INSERT INTO schedule (
+    SCH_CD
+    , MEM_CD
+    , SCH_TTL
+    , SCH_ST
+    , SCH_EN
+    , SCH_COLOR
+	) VALUES (
+	    SCHEDULE_SEQ.NEXTVAL
+	  , #{memCd}
+	  , #{schTtl}
+	  , TO_DATE(#{schSt},'YYYY-MM-DD')
+	  , TO_DATE(#{schSt},'YYYY-MM-DD')
+	  , #{schColor}
+	)
+	</insert>
+	
+</mapper>

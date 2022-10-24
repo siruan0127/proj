@@ -1,0 +1,39 @@
+package kr.ac.lms.vo;
+
+public class CollegeVO {
+
+	private int colCd;
+	private String colNm;
+	private int colCrd;
+	private int colFee;
+	
+	public int getColCd() {
+		return colCd;
+	}
+	public void setColCd(int colCd) {
+		this.colCd = colCd;
+	}
+	public String getColNm() {
+		return colNm;
+	}
+	public void setColNm(String colNm) {
+		this.colNm = colNm;
+	}
+	public int getColCrd() {
+		return colCrd;
+	}
+	public void setColCrd(int colCrd) {
+		this.colCrd = colCrd;
+	}
+	public int getColFee() {
+		return colFee;
+	}
+	public void setColFee(int colFee) {
+		this.colFee = colFee;
+	}
+	
+	@Override
+	public String toString() {
+		return "CollegeVO [colCd=" + colCd + ", colNm=" + colNm + ", colCrd=" + colCrd + ", colFee=" + colFee + "]";
+	}
+}

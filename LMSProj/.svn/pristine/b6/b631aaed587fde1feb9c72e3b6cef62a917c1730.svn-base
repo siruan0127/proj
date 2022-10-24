@@ -1,0 +1,69 @@
+package kr.ac.lms.vo;
+
+import java.util.Date;
+
+public class NoticeVO {
+	private int ntcCd;
+	private int mgrCd;
+	private int ntcHot;
+	private int ntcHit;
+	private Date ntcDt;
+	private String ntcCate;
+	private String ntcCon;
+	private String ntcTtl;
+	public int getNtcCd() {
+		return ntcCd;
+	}
+	public void setNtcCd(int ntcCd) {
+		this.ntcCd = ntcCd;
+	}
+	public int getMgrCd() {
+		return mgrCd;
+	}
+	public void setMgrCd(int mgrCd) {
+		this.mgrCd = mgrCd;
+	}
+	public int getNtcHot() {
+		return ntcHot;
+	}
+	public void setNtcHot(int ntcHot) {
+		this.ntcHot = ntcHot;
+	}
+	public int getNtcHit() {
+		return ntcHit;
+	}
+	public void setNtcHit(int ntcHit) {
+		this.ntcHit = ntcHit;
+	}
+	public Date getNtcDt() {
+		return ntcDt;
+	}
+	public void setNtcDt(Date ntcDt) {
+		this.ntcDt = ntcDt;
+	}
+	public String getNtcCate() {
+		return ntcCate;
+	}
+	public void setNtcCate(String ntcCate) {
+		this.ntcCate = ntcCate;
+	}
+	public String getNtcCon() {
+		return ntcCon;
+	}
+	public void setNtcCon(String ntcCon) {
+		this.ntcCon = ntcCon;
+	}
+	public String getNtcTtl() {
+		return ntcTtl;
+	}
+	public void setNtcTtl(String ntcTtl) {
+		this.ntcTtl = ntcTtl;
+	}
+	@Override
+	public String toString() {
+		return "NoticeVO [ntcCd=" + ntcCd + ", mgrCd=" + mgrCd + ", ntcHot=" + ntcHot + ", ntcHit=" + ntcHit
+				+ ", ntcDt=" + ntcDt + ", ntcCate=" + ntcCate + ", ntcCon=" + ntcCon + ", ntcTtl=" + ntcTtl + "]";
+	}
+	
+	
+}

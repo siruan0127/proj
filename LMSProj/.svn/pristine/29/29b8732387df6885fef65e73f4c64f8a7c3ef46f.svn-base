@@ -1,0 +1,18 @@
+package kr.ac.lms.service;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.ac.lms.vo.MemberVO;
+import kr.ac.lms.vo.PortletVO;
+
+public interface PortletService {
+	//유저별 포틀릿 화면 저장
+	public int updateSave(Map<String, Object> map);
+	
+	//유저별 포틀릿 화면 보여주기
+	public List<PortletVO> portletSelect(MemberVO memberVO);
+	
+	//유저가 선택안한 포틀릿 목록 보여주기
+	public List<PortletVO> portletNotSelect(MemberVO memberVO);
+}

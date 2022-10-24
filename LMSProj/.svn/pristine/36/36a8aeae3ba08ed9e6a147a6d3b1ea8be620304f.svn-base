@@ -1,0 +1,11 @@
+package kr.ac.lms.mapper;
+
+import java.util.List;
+
+import kr.ac.lms.vo.LecApplyVO;
+
+public interface StudentLectureMapper {
+
+	// 학생 강의 대시보드
+	public List<LecApplyVO> getStuLecList (int stuCd);
+}

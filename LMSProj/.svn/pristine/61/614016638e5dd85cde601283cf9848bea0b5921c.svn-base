@@ -1,0 +1,124 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="java.util.Date"%>
+<script type="text/javascript" src="/resources/js/jquery-3.6.0.js"></script>
+<style type="text/css">
+	.email-list>li .email-content .email-date{
+		width: 200px;
+	}
+</style>
+<script type="text/javascript">
+	$(function() {
+		$("#mailAll").on('click', function() {
+			if($("#mailAll").is(":checked")) $("input[name=chk]").prop("checked", true);
+			else $("input[name=chk]").prop("checked", false);
+		});
+		
+		$("input[name=chk]").on('click', function() {
+			var total = $("input[name=chk]").length;
+			var checked = $("input[name=chk]:checked").length;
+			
+			if(total != checked) $("#mailAll").prop("checked", false);
+			else $("#mailAll").prop("checked", true); 
+		});
+		
+		$('#delBtn').on('click', function(){
+			alert("delBtn");
+			
+			chkVal = [];
+			$('input[name=chk]:checked').each(function(i){
+				chkVal.push($(this).val());
+			});
+			
+			alert(chkVal);
+			
+			let data = { 'data' : chkVal };
+			console.log(JSON.stringify(chkVal));
+			
+			$.ajax({
+				url : "/mail/deleteAll",
+				contentType : "application/json;charset=utf-8",
+				data : JSON.stringify(chkVal),
+				type : 'post',
+				success : function(result){
+					document.location.href= document.location.href;
+				},
+				dataType : 'json'
+			});
+		});
+	});
+</script>
+<%
+	Date date = new Date();
+	SimpleDateFormat simpleDate = new SimpleDateFormat("yyyy-MM-dd");
+	String simDate = simpleDate.format(date);
+%>
+<div class="btn-group">
+	<div class="custom-control custom-checkbox">
+		<input type="checkbox" class="custom-control-input" id="mailAll">
+		<label class="custom-control-label" for="mailAll"></label>
+	</div>
+	<button type="button" class="btn btn-secondary">
+		<i class="mdi mdi-delete-variant font-16"></i>
+	</button>
+</div>
+<c:set var="date" value="<%= simDate %>" />
+<div class="mt-3">
+	<ul class="email-list">
+		<c:forEach var="mailVO" items="${ list }">
+			<fmt:formatDate var="mlTm" value='${ mailVO.mlTm }' pattern='yyyy-MM-dd' />
+			<fmt:formatDate var="mlYn" value='${ mailVO.mlYn }' pattern='yyyy-MM-dd' />
+				<li>
+					<div class="email-sender-info">
+						<div class="checkbox-wrapper-mail">
+							<div class="custom-control custom-checkbox">
+								<input type="checkbox" class="custom-control-input" id="chk_${ mailVO.mlCd }" value="${ mailVO.mlCd }" name="chk">
+								<label class="custom-control-label" for="chk_${ mailVO.mlCd }"></label>
+							</div>
+						</div>
+						<i class="mdi mdi-email-open email-action-icons-item"></i>
+						<c:if test="${ not empty mailVO.mailFileVOList }">
+							<i class="mdi mdi-paperclip"></i>
+						</c:if>
+						<a href="javascript: void(0);" class="email-title">
+							${ mailVO.mlRcpnm }
+						</a>
+					</div>
+					<div class="email-content">
+						<a href="/mail/write?mlCd=${ mailVO.mlCd }" class="email-subject">
+							${ mailVO.mlTtl }
+						</a>
+						<div class="email-date">
+							<c:if test="${ date == mlTm }">
+								<fmt:formatDate value="${ mailVO.mlTm }" pattern="HH:mm"></fmt:formatDate>
+							</c:if>
+							<c:if test="${ date != mlTm }">
+								<fmt:formatDate value="${ mailVO.mlTm }" pattern="MM-dd HH:mm"></fmt:formatDate>
+							</c:if>
+						</div>
+					</div>
+				</li>
+		</c:forEach>
+	</ul>
+</div>
+<!-- end .mt-4 -->
+
+<div class="row">
+	<div class="col-7 mt-1">Showing 1 - 20 of 289</div>
+	<!-- end col-->
+	<div class="col-5">
+		<div class="btn-group float-right">
+			<button type="button" class="btn btn-light btn-sm">
+				<i class="mdi mdi-chevron-left"></i>
+			</button>
+			<button type="button" class="btn btn-info btn-sm">
+				<i class="mdi mdi-chevron-right"></i>
+			</button>
+		</div>
+	</div>
+	<!-- end col-->
+</div>
+<!-- end row-->

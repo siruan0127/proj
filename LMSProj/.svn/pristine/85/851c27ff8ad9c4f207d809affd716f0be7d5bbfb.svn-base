@@ -1,0 +1,24 @@
+package kr.ac.lms.vo;
+
+public class SubjectVO {
+	private int subCd;
+	private String subNm;
+	public int getSubCd() {
+		return subCd;
+	}
+	public void setSubCd(int subCd) {
+		this.subCd = subCd;
+	}
+	public String getSubNm() {
+		return subNm;
+	}
+	public void setSubNm(String subNm) {
+		this.subNm = subNm;
+	}
+	@Override
+	public String toString() {
+		return "SubjectVO [subCd=" + subCd + ", subNm=" + subNm + "]";
+	}
+	
+	
+}

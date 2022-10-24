@@ -1,0 +1,222 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<script type="text/javascript" src="/resources/js/tui-grid.js"></script>
+<script type="text/javascript" src="/resources/js/spinner.js"></script>
+<link rel="stylesheet" href="/resources/css/tui-grid.css" type="text/css">
+<style>
+	#grid{
+		display: inline-block;
+		float: left;
+	}
+	
+	.stuDetail{
+ 		width: 859px;
+		background-color: #eee;
+		border: 1px solid #999;
+	}
+	
+	tr{
+		width: 859px;
+		height: 49px;
+	}
+	
+	th{
+		width: 12%;
+		text-align: right;
+		padding: 3px;
+	}
+	
+	td{
+		width: 25%;
+		padding: 3px 10px;
+		background: white;
+	}
+	
+	.detailDiv{
+		float: right;
+		width: 859px;
+		box-sizing: border-box;
+		margin-right: 10px;
+	}
+	
+	input[type="text"]{
+		width: 100%;
+	}
+	
+	#recNrsn{
+		resize: none;
+	}
+	
+	#headL{
+		display: inline-block;
+		width: 700px;
+	}
+	
+	#headD{
+		display: inline-block;
+		width: 859px;
+	}
+</style>
+<script>
+	$(function(){
+		//로딩중 화면 띄우기
+		loadingWithMask();
+		
+		$.ajax({
+			url : "/management/getProList",
+			type : 'post',
+			dataType : 'JSON',
+			success : function(result) {
+				console.log(result);
+				var data = [];
+				
+				$.each(result, function(i, v){
+					var temp = {};
+					$.each(Object.keys(v), function(i1, v1){
+						if(v1 != 'memberVO'){
+							temp[v1] = v[v1];
+						}
+					});
+					$.each(v.memberVO, function(i1, v1){
+						temp[i1] = v.memberVO[i1];
+					});
+					$.each(v.professorVO, function(i1, v1){
+						temp[i1] = v.professorVO[i1];
+					});
+					$.each(v.professorVO.departmentVO, function(i1, v1){
+						temp[i1] = v.professorVO.departmentVO[i1];
+					});
+					$.each(v.professorVO.departmentVO.collegeVO, function(i1, v1){
+						temp[i1] = v.professorVO.departmentVO.collegeVO[i1];
+					});
+					
+					data.push(temp);
+				});
+				
+				
+				$('#grid').empty();
+				
+				grid = new tui.Grid({
+					el : document.getElementById('grid'),
+					data : data,
+					scrollX : true,
+					scrollY : true,
+					bodyHeight: 410,
+					width : 700,
+					columns : [
+						{header : '단과대학', name : 'colNm', filter : 'select', width : 130, align : 'center'},
+						{header : '소속', name : 'depNm', filter : 'select', width : 120, align : 'center'},
+						{header : '직책', name : 'proPos', filter : 'select', width : 70, align : 'center'},
+						{header : '교번', name : 'memCd', width : 110, align : 'center'},
+						{header : '이름', name : 'memNm', filter : 'select', width : 100, align : 'center'},
+						{header : '연락처', name : 'memTel', align : 'center'},
+					],
+					rowHeaders: ['rowNum'],
+					columnOptions: { resizable: true }
+				});
+				
+				closeLoadingWithMask();
+				
+				 grid.on('click', function(object){
+					 $('#memFnm').empty();
+					 $('#memFnm').append('<input type="text" style="height: 188px;" readonly>');
+	                 var memCd = grid.getRow(object.rowKey).memCd;
+	                 console.log(memCd);
+					$.ajax({
+						url : "/management/proDetail",
+						data : { "memCd" : memCd },
+						type : 'post',
+						success : function(result) {
+							console.log(JSON.stringify(result));
+			                 $('#no').val(grid.getRow(object.rowKey)._attributes.rowNum);
+			                 if(result.memFnm != null){
+			                	 $('#memFnm').empty();
+				                 $('#memFnm').append('<img id="memFnm" src="/resources/profileImg/' + result.memFnm + '" style="height:188px">');
+			                 }
+			                 if(result.professorVO.proRet == null){
+				                 $('#recCate').val("재직");
+			                 }else{
+				                 $('#recCate').val("퇴직");
+			                 }
+			                 $('#colDepNm').val(result.professorVO.departmentVO.collegeVO.colNm + " " + result.professorVO.departmentVO.depNm);
+			                 $('#proPos').val(result.professorVO.proPos);
+			                 $('#memCd').val(result.memCd);
+			                 $('#memNmNE').val(result.memNm + " / " + result.memNme);
+			                 $('#proJoin').val(result.professorVO.proJoin);
+			                 if(result.professorVO.proRet != null){
+				                 $('#proRet').val(result.professorVO.proRet);
+			                 }
+			                 $('#memTel').val(result.memTel);
+			                 $('#memMl').val(result.memMl);
+			                 $('#memZip').val(result.memZip);
+			                 $('#memAddr').val(result.memAddr1 + " " + result.memAddr2);
+			                 $('#memBank').val(result.memBank);
+			                 $('#memDepoAct').val(result.memAct + "(" + result.memDepo + ")");
+						},
+						dataType : 'json'
+					});
+           		});
+				
+			}
+		});
+	});
+</script>
+<div>
+   <i class="mdi mdi-home" style="font-size: 1.3em"></i> <i class="dripicons-chevron-right"></i> 교수관리 <i class="dripicons-chevron-right"></i> <span style="font-weight: bold;">교수목록조회</span>
+</div>
+<br><br>
+<p id="headL"><i class="mdi mdi-record-circle" style="color: #001353;"></i>&ensp;교수 목록</p>
+<p id="headD"><i class="mdi mdi-record-circle" style="color: #001353;"></i>&ensp;교수 상세정보</p>
+<div id="grid"></div>
+<div class="detailDiv">
+	<table class="stuDetail">
+		<tr>
+			<th>No</th>
+			<td><input type="text" id="no" readonly></td>
+			<th rowspan="4" style="padding-bottom: 150px;">사진</th>
+			<td rowspan="4" id="memFnm"><input type="text" style="height: 188px;" readonly></td>
+		</tr>
+		<tr>
+			<th>소속</th>
+			<td><input type="text" id="colDepNm" readonly></td>
+		</tr>
+		<tr>
+			<th>교번</th>
+			<td><input type="text" id="memCd" readonly></td>
+		</tr>
+		<tr>
+			<th>이름(한글/영문)</th>
+			<td><input type="text" id="memNmNE" readonly></td>
+		</tr>
+		<tr>
+			<th>재직상태</th>
+			<td><input type="text" id="recCate" readonly></td>
+			<th>직책</th>
+			<td><input type="text" id="proPos" readonly></td>
+		</tr>
+		<tr>
+			<th>입사일</th>
+			<td><input type="text" id="proJoin" readonly></td>
+			<th>퇴사일</th>
+			<td><input type="text" id="proRet" readonly></td>
+		</tr>
+		<tr>
+			<th>전화번호</th>
+			<td><input type="text" id="memTel" readonly></td>
+			<th>이메일</th>
+			<td><input type="text" id="memMl" readonly></td>
+		</tr>
+		<tr>
+			<th>우편번호</th>
+			<td><input type="text" id="memZip" readonly></td>
+			<th>주소</th>
+			<td><input type="text" id="memAddr" readonly></td>
+		</tr>
+		<tr>
+			<th>은행</th>
+			<td><input type="text" id="memBank" readonly></td>
+			<th>계좌번호(예금주)</th>
+			<td><input type="text" id="memDepoAct" readonly></td>
+		</tr>
+	</table>
+</div>

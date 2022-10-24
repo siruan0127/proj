@@ -1,0 +1,93 @@
+package kr.ac.lms.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.ac.lms.service.ScheduleService;
+import kr.ac.lms.vo.MemberVO;
+import kr.ac.lms.vo.ScheduleVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("/schedule")
+public class ScheduleController {
+	
+	int result = 0;
+	
+	@Autowired
+	private ScheduleService scheduleService;
+	
+	@GetMapping("/calendar")
+	public String calendar() {
+		return "schedule/calendar";
+	}
+	
+	@ResponseBody
+	@PostMapping("/calendarList")
+	public List<HashMap<String,Object>> allSchedule(HttpServletRequest request){
+		HttpSession session = request.getSession();
+		MemberVO memVO = (MemberVO) session.getAttribute("memSession");
+		int memCd = memVO.getMemCd();
+		
+		JSONObject jo;
+		JSONArray ja = new JSONArray();
+		
+		List<ScheduleVO> list= scheduleService.allSchedule(memCd);
+		HashMap<String,Object> map = new HashMap<String, Object>();
+		for(ScheduleVO vo: list) {
+			map.put("title", vo.getSchTtl());
+			map.put("start", vo.getSchSt());
+			map.put("end", vo.getSchEn());
+			map.put("id", vo.getSchCd());
+			map.put("color", vo.getSchColor());
+			map.put("allDay","allDay");
+			jo = new JSONObject(map);
+			ja.add(jo);
+		}
+		
+		return ja;
+	}
+	
+	//등록하기
+	@PostMapping("/update")
+	@ResponseBody
+	public int insert(@RequestBody Map<String, String> param,HttpServletRequest request) {
+		
+		log.info("파라미터" +param);
+		
+		HttpSession session = request.getSession();
+		MemberVO memVO = (MemberVO) session.getAttribute("memSession");
+		int memCd = memVO.getMemCd();
+		ScheduleVO vo = new ScheduleVO();
+		vo.setMemCd(memCd);
+		String schTtl = param.get("schTtl");
+		String schColor = param.get("schColor");
+		String schSt = param.get("schSt");
+		String schEn = param.get("schEn");
+		
+		vo.setSchColor(schColor);
+		vo.setSchSt(schSt);
+		vo.setSchEn(schEn);
+		vo.setSchTtl(schTtl);
+		
+		result = scheduleService.insert(vo);
+		
+		return result;
+	}
+	
+}

@@ -1,0 +1,63 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%
+	request.setCharacterEncoding("utf-8");
+	String title = request.getParameter("title");
+	String name = request.getParameter("name");
+	int code = Integer.parseInt(request.getParameter("code"));
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title><%=title%></title>
+<script src="/resources/js/jquery-3.6.0.js"></script>
+<style type="text/css">
+	#click2closePopUp {
+		float : right;
+	}
+	#realPopUpBody {
+		width : 400px;
+		height : 500px;
+	}
+</style>
+<script type="text/javascript">
+
+function setCookie(name, value) {
+	var todayDate = new Date();
+	todayDate.setHours(24);
+	document.cookie = name + "=" + escape(value) 
+					+ ";path=/;expires=" + todayDate.toGMTString() + ";";
+}
+
+window.onload = function() {
+	
+	//닫기 버튼
+	$('#click2closePopUp').on('click', function() {
+		if($('#click2setCookie').is(":checked")) {
+			setCookie("popCookie_<%=code%>", "done");
+		}
+		window.close();
+	});
+}
+</script>
+</head>
+<body>
+	<div>
+	    <div class="realPopUpBody">
+	        <div>
+	        	<img src="/resources/popup/<%=name%>" 
+	        	alt="<%=name%>"
+	        	style="width : 400px;"/>
+	        </div>
+	        <div>
+	            <input type="checkbox" id="click2setCookie" />    
+	            <label for="do-not-open" >오늘 하루 열지 않기</label>
+		        <a href="#a" title="닫기" class="btn-pop-close" id="click2closePopUp">
+		        	<span class="hide">닫기</span>
+		        </a>
+	        </div>
+	    </div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,46 @@
+package kr.ac.lms.vo;
+
+public class EvaluationVO {
+	private int evlqCd;
+	private int lecCd;
+	private int stuCd;
+	private int evlScore;
+	private String evlEtc;
+	public int getEvlqCd() {
+		return evlqCd;
+	}
+	public void setEvlqCd(int evlqCd) {
+		this.evlqCd = evlqCd;
+	}
+	public int getLecCd() {
+		return lecCd;
+	}
+	public void setLecCd(int lecCd) {
+		this.lecCd = lecCd;
+	}
+	public int getStuCd() {
+		return stuCd;
+	}
+	public void setStuCd(int stuCd) {
+		this.stuCd = stuCd;
+	}
+	public int getEvlScore() {
+		return evlScore;
+	}
+	public void setEvlScore(int evlScore) {
+		this.evlScore = evlScore;
+	}
+	public String getEvlEtc() {
+		return evlEtc;
+	}
+	public void setEvlEtc(String evlEtc) {
+		this.evlEtc = evlEtc;
+	}
+	@Override
+	public String toString() {
+		return "EvaluationVO [evlqCd=" + evlqCd + ", lecCd=" + lecCd + ", stuCd=" + stuCd + ", evlScore=" + evlScore
+				+ ", evlEtc=" + evlEtc + "]";
+	}
+	
+	
+}

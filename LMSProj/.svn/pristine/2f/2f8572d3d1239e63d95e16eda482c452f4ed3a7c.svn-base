@@ -1,0 +1,34 @@
+package kr.ac.lms.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.ac.lms.vo.LecApplyVO;
+import kr.ac.lms.vo.MemberVO;
+
+public interface TotalGradeMapper {
+	
+	//개인정보 가져오기
+	public MemberVO getInfo(int memCd);
+	
+	//년도 및 학기 가져오기
+	public List<LecApplyVO> getYrNSem(Map<String, Object> map);
+	
+	//전체 성적 불러오기
+	public List<LecApplyVO> getList(Map<String, Object> map);
+	
+	//현재 년도, 학기 가져오기
+	public Map<String, Object> getNow();
+	
+	//성적 건수 가져오기
+	public int getCnt(Map<String, Object> map);
+	
+	//현재 학기 성적 불러오기
+	public List<LecApplyVO> getPreList(Map<String, Object> map);
+	
+	//전체 성적 불러오기
+	public Map<String, Object> getTgrade(Map<String, Object> map);
+	
+	//신청학점 불러오기
+	public int getTcnt(Map<String, Object> map);
+}

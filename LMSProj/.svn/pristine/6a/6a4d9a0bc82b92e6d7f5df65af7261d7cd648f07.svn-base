@@ -1,0 +1,56 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<link rel="stylesheet" href="/resources/css/suwon.css">
+<script type="text/javascript" src="/resources/js/jquery-3.6.0.js"></script>
+
+	<h1 class="header-title mb-3">${data.lecaNm }</h1>
+
+	<!-- 공지사항 게시판 -->
+	<div class="col-lg-11">
+		<div class="card">
+			<div class="card-body">
+				<h4 class="header-title mb-3">공지사항</h4>
+
+				<div class="table-responsive">
+				<c:if test="${empty lecNoticeVO}">
+				
+					<p>등록된 공지사항이 존재하지 않습니다.</p>
+				
+				</c:if>
+				<c:if test="${not empty lecNoticeVO}">
+				
+				
+
+					<table class="table mb-0" border="1">
+						<thead class="table-light">
+							<tr>
+								<th style="width: 90%;">글제목</th>
+								<th style="width: 10%;">게시일</th>
+							</tr>
+						</thead>
+						<tbody>
+						<c:forEach var="NotVO" items="${lecNoticeVO}">
+							<tr>
+								<td><a href="/professorLecture/lecNoticeDetail?lntcCd=${NotVO.lntcCd }">${NotVO.lntcTtl }</a></td>
+								<td><fmt:formatDate value="${NotVO.lntcReg }" pattern="yyyy.MM.dd"/></td>
+							</tr>
+						</c:forEach>
+						</tbody>
+					</table>
+				</c:if>
+				</div>
+				<!-- end table-responsive -->
+
+			</div>
+		</div>
+	</div>
+	<!-- 공지사항 게시판 -->
+	<a href="/professorLecture/lecNoticeInsert?lecCd=${data.lecCd }" class="btn btn-secondary">등록하기</a>
+
+	<script type="text/javascript">
+	</script>
+	
+	
+	
+	

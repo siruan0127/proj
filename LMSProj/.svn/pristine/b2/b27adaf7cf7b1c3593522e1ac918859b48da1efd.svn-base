@@ -1,0 +1,107 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title></title>
+<style type="text/css">
+#tab{
+border-collapse: collapse;
+}
+.center{
+text-align: center;
+}
+.right{
+text-align: right;
+}
+</style>
+<script src="/resources/js/jquery-3.6.0.js"></script>
+<script type="text/javascript">
+var div;
+var initBody;
+
+function print()
+{
+   div = document.getElementById('d1');
+    
+   window.onbeforeprint = beforePrint;
+   window.onafterprint = afterPrint;
+   window.print();
+}
+
+function beforePrint()
+{
+   initBody = document.body.innerHTML;
+   document.body.innerHTML = div.innerHTML;
+}
+
+function afterPrint()
+{
+   document.body.innerHTML = initBody;
+}
+
+$(function(){
+	$('#print').on('click',function(){
+		print();
+	})
+})
+</script>
+</head>
+<body>
+<div id="d1">
+<table border ="1" id="tab">
+		<tr>
+			<td colspan="4" class="center">${map.PAY_DT2}</td>
+			<td class="center">구분</td>
+			<td class="center">등록금</td>
+			<td class="center">장학금액</td>
+			<td class="center">납입금액</td>
+		</tr>
+		
+		<tr>
+			<td class="center">대학</td>
+			<td colspan="3">${map.COL_NM}</td>
+			<td class="center">입학금</td>
+			<td class="right">0</td>
+			<td class="right">0</td>
+			<td class="right">0</td>
+		</tr>
+		<tr>
+			<td class="center">학과(전공)</td>
+			<td colspan="3">${map.DEP_NM}</td>
+			<td class="center">수업료</td>
+			<td class="right"><fmt:formatNumber value="${map.COL_FEE}" pattern="#,###,###" /></td>
+			<td class="right"><fmt:formatNumber value="${map.SCLH_AMT}" pattern="#,###,###" /></td>
+			<td class="right"><fmt:formatNumber value="${map.PAY_AMT}" pattern="#,###,###" /></td>
+		</tr>
+		
+		<tr>
+			<td class="center">학번</td>
+			<td>${map.MEM_CD}</td>
+			<td class="center">학년</td>
+			<td>${map.PAY_SEM}</td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td class="center">성명</td>
+			<td colspan="3">${map.MEM_NM}</td>
+			<td class="center">계</td>
+			<td class="right"><fmt:formatNumber value="${map.COL_FEE}" pattern="#,###,###" /></td>
+			<td class="right"><fmt:formatNumber value="${map.SCLH_AMT}" pattern="#,###,###" /></td>
+			<td class="right"><fmt:formatNumber value="${map.PAY_AMT}" pattern="#,###,###" /></td>
+		</tr>
+		<tr>
+			<td class="center">납부일자</td>
+			<td colspan="7">${map.PAY_DT}</td>
+		</tr>
+</table>
+</div>
+<input type="button" value="인쇄하기" id="print" />
+</body>
+</html>

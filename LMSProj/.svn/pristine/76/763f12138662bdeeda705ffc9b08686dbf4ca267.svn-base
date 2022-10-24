@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="kr.ac.lms.mapper.RecordApplyMapper">
+	<select id="stuInfoList" parameterType="memberVO" resultType="memberVO">
+		SELECT M.MEM_CD
+		      ,M.MEM_NM
+		      ,CASE WHEN SUBSTR(M.MEM_REG2, 1, 1) in ('1', '2') THEN '19'
+		            WHEN SUBSTR(M.MEM_REG2, 1, 1) in ('3', '4') THEN '20'
+		        END
+		    || SUBSTR(M.MEM_REG1, 1, 2) || '-' || SUBSTR(M.MEM_REG1, 3, 2) || '-' ||SUBSTR(MEM_REG1, 5, 2) BIRTH
+		      ,CASE WHEN SUBSTR(M.MEM_REG2, 1, 1) IN ('1', '3') THEN '남'
+		            WHEN SUBSTR(M.MEM_REG2, 1, 1) IN ('2', '4') THEN '여'
+		       END SEX
+		      ,D.DEP_NM
+		      ,S.STU_SEM
+		      ,S.STU_YR
+		      ,M.MEM_TEL
+		      ,SUBSTR(M.MEM_CD, 1, 4) || '-03-01(최초입학)' AS first
+		FROM MEMBER M, DEPARTMENT D, STUDENT S
+		WHERE M.MEM_CD = #{memCd}
+		AND   S.DEP_CD = D.DEP_CD
+		AND   M.MEM_CD = S.STU_CD(+)	
+	</select>
+	
+	<select id="history" parameterType="memberVO" resultType="recordVO">
+			SELECT ROWNUM AS RNUM
+		      ,R.REC_YR
+		      ,R.REC_SEM
+		      ,R.REC_PER
+		      ,R.REC_DT
+		      ,R.REC_YN
+		      ,C.COMD_NM
+		      ,REC_RSN
+		FROM   RECORD R, STUDENT S, COMMON_DETAIL C
+		WHERE  S.STU_CD = #{memCd}
+		AND    S.STU_CD = R.STU_CD(+)
+		AND    C.COMD_CD = R.REC_CATE
+		ORDER BY REC_DT DESC
+	</select>
+	
+	<select id="countResult" parameterType="memberVO" resultType="int">
+		SELECT COUNT(*) AS CNT
+		FROM RECORD
+		WHERE STU_CD = #{memCd}
+	</select>
+	
+	<select id="detailHisoty" parameterType="hashMap" resultType="RecordVO">
+		WITH U AS(
+	    SELECT (ROW_NUMBER() OVER(ORDER BY REC_DT DESC)) AS RNUM
+	          ,(SELECT EXTRACT(YEAR FROM SYSDATE) FROM DUAL) AS YEAR,
+	          (CASE WHEN EXTRACT(MONTH FROM SYSDATE) IN ('8','9','10','11','12','1') THEN '2'
+	                WHEN EXTRACT(MONTH FROM SYSDATE) IN ('2','3','4','5','6','7') THEN '1'
+	           END) AS HAK
+	          ,C.COMD_NM
+	          ,R.REC_RSN
+	          ,R.REC_DT
+	          ,R.REC_YR
+	          ,R.REC_SEM
+	          ,R.REC_PER
+	          ,(CASE REC_PER WHEN 1 THEN TO_CHAR(R.REC_YR || '년도 / ' || R.REC_SEM || '학기')
+	                 WHEN 2 THEN ( 
+	                                CASE R.REC_SEM WHEN 1 THEN TO_CHAR(R.REC_YR || '년도 / ' || (R.REC_SEM + 1) || '학기')
+	                                ELSE TO_CHAR((R.REC_YR + 1) || '년도 / ' || (R.REC_SEM - 1) || '학기')
+	                                END
+	                            )
+	                WHEN 3 THEN (
+	                                CASE R.REC_SEM WHEN 1 THEN TO_CHAR((R.REC_YR + 1) || '년도 / ' || R.REC_SEM || '학기')
+	                                ELSE TO_CHAR((R.REC_YR + 1) || '년도 / ' || R.REC_SEM || '학기')
+	                                END
+	                            )
+	                WHEN 4 THEN (
+	                                CASE R.REC_SEM WHEN 1 THEN TO_CHAR((R.REC_YR + 1) || '년도 / ' || (R.REC_SEM + 1) || '학기')
+	                                ELSE TO_CHAR((R.REC_YR + 2) || '년도 / ' || (R.REC_SEM - 1) || '학기')
+	                                END
+	                            )
+	            END) AS ENDEXPECT
+	    FROM   COMMON_DETAIL C, RECORD R, STUDENT S
+	    WHERE  S.STU_CD = #{memCd}
+	    AND    S.STU_CD = R.STU_CD(+)
+	    AND    C.COMD_CD = R.REC_CATE
+	)
+	SELECT U.*
+	FROM U
+	WHERE U.RNUM = #{rnum}
+	</select>
+	
+	<insert id="insertRecord" parameterType="hashMap">
+		INSERT INTO RECORD(REC_CD, STU_CD, REC_CATE, REC_YR, REC_SEM, REC_PER, REC_RSN, REC_DT, REC_YN)
+		VALUES(REC_SEQ.NEXTVAL, #{stuCd}, #{recCate}, (SELECT EXTRACT(YEAR FROM SYSDATE) FROM DUAL),
+		      (CASE WHEN EXTRACT(MONTH FROM SYSDATE) IN ('8','9','10','11','12','1') THEN '2'
+		            WHEN EXTRACT(MONTH FROM SYSDATE) IN ('2','3','4','5','6','7') THEN '1'
+		       END), #{recPer}, #{recRsn}, SYSDATE, 0)
+	</insert>
+	
+	<select id="counselCnt" parameterType="hashMap" resultType="int">
+		SELECT COUNT(*)
+		FROM   COUNSEL C
+		WHERE  C.STU_CD = #{stuCd}
+		AND    C.CNSL_CATE = #{cnslCate}
+		AND    EXTRACT(YEAR FROM C.CNSL_DT) = EXTRACT(YEAR FROM SYSDATE)
+	</select>
+	
+</mapper>

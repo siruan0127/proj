@@ -1,0 +1,224 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
+<script>"https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.min.js"></script>
+<style>
+	#lecApplyWrapper {
+		width: 100%;
+		padding: 30px 10%;
+	}
+	
+	#lecApplyPdf {
+		padding: 0 5%;
+	}
+
+	.lecApplyTop {
+		width: 100%;
+		height: 50px;
+	}
+
+	.lecApplyName {
+		margin-bottom: 40px;
+		width: 300px;
+		float: left;
+	}
+
+	.clear {
+		clear: both;
+	}
+	
+	.pdfbtn {
+		float: right;
+		margin-right: 5%;
+	}
+</style>
+
+
+<!-- 	<div class="mb-3"> -->
+<!-- 		<label for="simpleinput" class="form-label">교과목명</label> <input -->
+<!-- 			type="text" id="simpleinput" class="form-control"> -->
+<!-- 	</div> -->
+
+<!-- 	<div class="mb-3"> -->
+<!-- 		<label for="example-email" class="form-label">학수번호</label> <input -->
+<!-- 			type="email" id="example-email" name="example-email" -->
+<!-- 			class="form-control" placeholder="Email"> -->
+<!-- 	</div> -->
+
+<!-- 	<div class="mb-3"> -->
+<!-- 		<label for="example-palaceholder" class="form-label">개설학과</label> -->
+<!-- 		<input type="text" id="example-palaceholder" class="form-control" -->
+<!-- 			placeholder="placeholder"> -->
+<!-- 	</div> -->
+
+<!-- 	<div class="mb-3"> -->
+<!-- 		<label for="example-readonly" class="form-label">설강학기</label> <input -->
+<!-- 			type="text" id="example-readonly" class="form-control" readonly="" -->
+<!-- 			value="Readonly value"> -->
+<!-- 	</div> -->
+
+	<div id="lecApplyWrapper">
+		<button type="button" class="btn btn-secondary pdfbtn" value="save" onclick="pdfPrint()">PDF 출력</button>
+		<div id="lecApplyPdf">
+		<div class="lecApplyTop">
+			<h3 class="lecApplyName">강의계획서</h3>
+		</div>
+	
+		<div class="clear"></div>
+	
+		<div class="mb-3" style="width:49%;float:left;">
+			<label for="example-disable" class="form-label">교과목명</label> <input
+				type="text" class="form-control" disabled
+				value="${data.lecaNm }">
+		</div>
+	
+		<div class="mb-3" style="width:49%;float:right;">
+			<label for="example-disable" class="form-label">학수번호</label> <input
+				type="text" class="form-control" disabled
+				value="${data.subCd }">
+		</div>
+	
+		<div class="clear"></div>
+	
+		<div class="mb-3" style="width:49%;float:left;">
+			<label for="example-disable" class="form-label">개설학과</label> <input
+				type="text" class="form-control" disabled
+				value="${data.departmentVO.depNm }">
+		</div>
+	
+		<div class="mb-3" style="width:49%;float:right;">
+	
+			<label for="example-disable" class="form-label">설강학기</label> <input
+				type="text" class="form-control" disabled
+				value="${data.lecaSem }학기">
+		</div>
+	
+		<div class="clear"></div>
+	
+		<div class="mb-3" style="width:49%;float:left;">
+			<label for="example-disable" class="form-label">학점시수 및 평가</label> <input
+				type="text" class="form-control" disabled
+				value="${data.lecaPer }&nbsp;&#47;&nbsp;${data.commonDetailVO.comdNm }">
+		</div>
+	
+		<div class="mb-3" style="width:49%;float:right;">
+			<label for="example-disable" class="form-label">담당교수</label> <input
+				type="text" class="form-control" disabled
+				value="${data.memberVO.memNm }">
+		</div>
+	
+		<div class="clear"></div>
+	
+		<div class="mb-3" style="width:49%;float:left;">
+			<label for="example-disable" class="form-label">교수소속</label> <input
+				type="text" class="form-control" disabled
+				value="${data.collegeVO.colNm }&nbsp;${data.departmentVO.depNm}">
+		</div>
+	
+		<div class="mb-3" style="width:49%;float:right;">
+			<label for="example-disable" class="form-label">학과전화</label> <input
+				type="text" class="form-control" disabled
+				value="${data.departmentVO.depTel }">
+		</div>
+	
+		<div class="clear"></div>
+		
+		<div class="mb-3" style="width:49%;float:left;">
+			<label for="example-disable" class="form-label">담당교수 e-mail</label> <input
+				type="text" class="form-control" disabled
+				value="${data.memberVO.memMl }">
+		</div>
+	
+		<div class="mb-3" style="width:49%;float:right;">
+			<label for="example-disable" class="form-label">학점</label> <input
+				type="text" class="form-control" disabled
+				value="${data.lecaPer }학점">
+		</div>
+	
+		<div class="clear"></div>
+	
+		<div class="mb-3" >
+			<label for="example-disable" class="form-label">수업개요</label>
+			<textarea class="form-control" rows="4" readonly>${data.lecaCon }</textarea>
+		</div>
+	
+		<div class="mb-3">
+			<label for="example-disable" class="form-label">평가방법(%)</label>
+			<div class="table-responsive-sm">
+	        <table class="table table-bordered table-centered mb-0">
+	            <thead>
+	                <tr>
+	                    <th style="width:20%;">중간고사</th>
+	                    <th style="width:20%;">기말고사</th>
+	                    <th style="width:20%;">과제</th>
+	                    <th style="width:20%;">퀴즈</th>
+	                    <th style="width:20%;">출결</th>
+	                </tr>
+	            </thead>
+	            <tbody>
+	                <tr>
+	                    <td>${data.criteriaVO.crtrMp }</td>
+	                    <td>${data.criteriaVO.crtrFp }</td>
+	                    <td>${data.criteriaVO.crtrTp }</td>
+	                    <td>${data.criteriaVO.crtrQp }</td>
+	                    <td>${data.criteriaVO.crtrAp }</td>
+	                </tr>
+	            </tbody>
+	        </table>
+	    </div>
+		</div>
+	
+		<div class="mb-3">
+			<label for="example-disable" class="form-label">교재 및 참고문헌</label>
+			<textarea class="form-control" rows="4" readonly>${data.lecaBook }</textarea>
+		</div>
+	
+		<div class="mb-3">
+			<label for="example-disable" class="form-label">주차별 강의계획</label>
+			<div class="table-responsive-sm">
+	        <table class="table table-bordered table-centered mb-0">
+	        <c:forEach var="weekPlanVO" items="${week}">
+				<tr>
+				    <td style="width:20%;">${weekPlanVO.wpNo }주차</td>
+				    <td style="width:80%;">${weekPlanVO.wpCon }</td>
+				</tr>
+			</c:forEach>
+	        </table>
+	    </div>
+		</div>
+	</div>
+
+
+</div>
+<script>
+// 현재 페이지의 html을 A4 크기에 맞춰 PDF로 변환하는 함수
+function pdfPrint(){
+    html2canvas(document.getElementById('lecApplyPdf'), {
+        onrendered: function (canvas) {
+            // 현재페이지 화면을 이미지로 변환
+            var imgData = canvas.toDataURL('image/png');
+         	// A4 기준 이미지 가로 길이(mm)
+            var imgWidth = 210; 
+         	// A4 기준 페이지 세로 길이 계산
+            var pageHeight = imgWidth * 1.414;  
+            var imgHeight = canvas.height * imgWidth / canvas.width;
+            var heightLeft = imgHeight;
+            var doc = new jsPDF('p', 'mm', 'a4');
+            var position = 0;
+            // 첫 페이지 출력
+            doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+            // 한 페이지 이상일 경우
+            while (heightLeft >= 20) {
+                position = heightLeft - imgHeight;
+                doc.addPage();
+                doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+            }
+            // 파일 저장
+            doc.save('${data.lecaNm} 강의계획서.pdf');
+        }
+    });
+}
+</script>

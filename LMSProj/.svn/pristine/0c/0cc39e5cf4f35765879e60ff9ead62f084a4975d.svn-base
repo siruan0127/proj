@@ -1,0 +1,323 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<script src="/resources/js/jquery-3.6.0.js"></script>
+<script type="text/javascript">
+$(function(){
+	var memCd = $('#stuNum').val();
+	var firstData = {"memCd" : memCd
+					,"rnum": 1};
+	//처음 상세이력
+	$.ajax({
+		url : "/record/firstData",
+		contentType : "application/json;charset=utf-8",
+		data : JSON.stringify(firstData),
+		type : "post",
+		success : function(result){
+			
+			$('#applyGubun').val(result.comdNm + "신청");
+			$('#applyGubun').prop('readonly', true);
+			$('#changeReason1').val(result.recRsn);
+			$('#changeReason1').prop('readonly', true);
+			if((result.recPer) == 0){
+				$('#term').val("");
+				$('#term').prop('readonly', true);
+			}else{
+				$('#term').val(result.recPer + "학기");
+				$('#term').prop('readonly', true);
+			}
+			$('#applyYear').val(result.recDt + " (" + result.recYr +"년도 / " + result.recSem+"학기)");
+			$('#applyYear').prop('readonly', true);
+			$('#endYear').val(result.endExpect);
+			$('#endYear').prop('readonly', true);
+			$('#counselYn').prop('checked', true);
+		},
+		dataType : 'JSON'
+	});
+	
+	//신청/승인이력에서 tr을 누르면 오른쪽에 상세이력 정보 확인가능
+    $('#historyTable tbody').on('click', 'tr td:not(:first-child)', function () {
+    	
+    	var myRow = $(this).closest("tr").index() + 1;
+    	console.log(myRow);
+    	var stuNum = $('#stuNum').val();
+    	console.log(stuNum);
+    	
+    	let data = {"memCd" : stuNum
+    				,"rnum" : myRow};
+    	
+		//변동사유를 셀렉트 박스로 바꾸기
+		var changeReason1 = document.querySelector('#changeReason1');		
+		var changeReason2 = document.querySelector('#changeReason2');		
+		
+		changeReason1.style.display = 'block';
+		changeReason2.style.display = 'none';
+
+    	//상세이력
+    	$.ajax({
+    		url : "/record/detailHistory",
+    		contentType : "application/json;charset=utf-8",
+    		data : JSON.stringify(data),
+    		type : "post",
+    		success : function(result){
+    	    	$('#save').prop('disabled', true);
+    			console.log(result);
+		    	
+    			$('#applyGubun').val(result.comdNm + "신청");
+				$('#applyGubun').prop('readonly', true);
+				$('#changeReason1').val(result.recRsn);
+				$('#changeReason1').prop('readonly', true);
+				if((result.recPer) == 0){
+					$('#term').val("");
+					$('#term').prop('readonly', true);
+				}else{
+					$('#term').val(result.recPer + "학기");
+					$('#term').prop('readonly', true);
+				}
+				$('#applyYear').val(result.recDt + " (" + result.recYr +"년도 / " + result.recSem+"학기)");
+				$('#applyYear').prop('readonly', true);
+				$('#endYear').val(result.endExpect);
+				$('#endYear').prop('readonly', true);
+				$('#counselYn').prop('checked', true);
+    		},
+    		dataType : 'JSON'
+    	});
+    	
+    });
+	
+	//신규(신청)버튼을 눌렀을 경우
+	$('#newApply').on('click', function(){
+		$('#applyGubun').val("자퇴신청");
+		$('#changeReason1').val("");
+		$('#term').val("");
+		$('#applyYear').val("");
+		$('#endYear').val("");
+		$('#counselYn').prop('checked', false);
+		$('#save').prop('disabled', false);
+		
+		//변동사유를 셀렉트 박스로 바꾸기
+		var changeReason1 = document.querySelector('#changeReason1');		
+		var changeReason2 = document.querySelector('#changeReason2');		
+		
+		changeReason1.style.display = 'none';
+		changeReason2.style.display = 'block';
+		
+		var stuNum = $('#stuNum').val();
+		var param = {"stuCd" : stuNum,
+					 "cnslCate" : 'C103'}
+		
+		//상담여부 체크
+	    $.ajax({
+	    		url : "/record/counselCnt",
+	    		contentType : "application/json;charset=utf-8",
+	    		data : JSON.stringify(param),
+	    		type : "post",
+	    		success : function(result){
+	    			console.log(result);
+	    			if(result >= 1){
+	    				$('#counselYn').prop('checked', true);
+	    			}
+	    		},
+	    		dataType : 'JSON'
+	    	});
+		
+	})
+	
+	//저장 버튼을 눌렀을 경우
+	$('#save').on('click', function(){
+			if($('#counselYn').is(':checked') == false){
+				alert("자퇴신청은 상담이 필수입니다");
+				return false;
+			}
+			
+			var stuNum = $('#stuNum').val();				//stuCd
+			var changeReason = $('#changeReason2').val();	//recRsn
+			
+
+			let data = {"stuCd" : stuNum,
+						"recCate" : 'R003',
+						"recPer" : 0,
+						"recRsn" : changeReason};
+
+			
+	    	$.ajax({
+	    		url : "/record/saveRecord",
+	    		contentType : "application/json;charset=utf-8",
+	    		data : JSON.stringify(data),
+	    		type : "post",
+	    		dataType : 'JSON',
+	    		success : function(result){
+	    			console.log(result);
+	    			alert("성공적으로 저장되었습니다");
+	    			document.location.href= document.location.href;
+	    		}
+	    		
+	    	});
+		})
+		
+		$('#counselYn').on('click', function(){
+			alert("사용자가 변경할 수 없습니다.");
+		})
+})
+
+</script>
+</head>
+<body>
+	<p>*학생기초정보</p>
+	<c:forEach var="data" items="${data}">
+		<div class="mb-3" style="border: 2px solid gray;" id="divWhole">
+			<div class="mb-3" style="border: 1px solid gray;" class="divRow">
+				<label for="simpleinput" class="form-label">학번</label> <input
+					type="text" id="stuNum" class="form-control"
+					value="${data.memCd}"> <label for="simpleinput"
+					class="form-label">성명</label> <input type="text" id="simpleinput"
+					class="form-control" value="${data.memNm}"> <label
+					for="simpleinput" class="form-label">생년월일(성별)</label> <input
+					type="text" id="simpleinput" class="form-control"
+					value="${data.birth}(${data.sex})"> <label for="simpleinput"
+					class="form-label">입학정보</label> <input type="text" id="simpleinput"
+					class="form-control" value="${data.first}">
+			</div>
+			<div class="mb-3" style="border: 1px solid gray;" class="divRow">
+				<label for="simpleinput" class="form-label">소속</label> <input
+					type="text" id="simpleinput" class="form-control"
+					value="${data.depNm}"> <label for="simpleinput"
+					class="form-label">학년</label> <input type="text" id="simpleinput"
+					class="form-control" value="${data.stuYr}"> <label
+					for="simpleinput" class="form-label">재학학기 수</label> <input
+					type="text" id="simpleinput" class="form-control"
+					value="${data.stuSem}"> <label for="simpleinput"
+					class="form-label">연락처</label> <input type="text" id="simpleinput"
+					class="form-control" value="${data.memTel}">
+			</div>
+		</div>
+	</c:forEach>
+	
+		<div style="width: 600px; float: left;" id="divTable">
+		<p style="float: left">*신청/승인이력</p>
+		<p style="float: right;">총 ${cnt}건</p>
+		<br style="clear: both;">
+		<table border="1" style="border-collapse: collapse;" id="historyTable">
+		<thead>
+			<tr>
+				<th>No</th>
+				<th>년도/학기</th>
+				<th>신청 구분</th>
+				<th>신청 일자</th>
+				<th>신청 기간</th>
+				<th>사유</th>
+				<th>승인 구분</th>
+			</tr>
+		</thead>
+			<tbody>
+			<c:forEach var="history" items="${history}" varStatus="status">
+				<tr>
+					<td><c:out value="${status.count}" /></td>
+					<td>${history.recYr}/${history.recSem}</td>
+					<td>${history.comdNm}</td>
+					<td><fmt:formatDate value="${history.recDt}"
+							pattern="yyyy.MM.dd" /></td>
+					<td>${history.recPer} 학기</td>
+					<td>${history.recRsn}</td>
+					<c:if test="${history.recYn == 0}">
+						<td>승인대기</td>
+					</c:if>
+					<c:if test="${history.recYn == 1}">
+						<td>승인</td>
+					</c:if>
+					<c:if test="${history.recYn == 2}">
+						<td>반려</td>
+					</c:if>
+				</tr>
+			</c:forEach>
+			</tbody>
+		</table>
+	</div>
+	
+	<div style="width: 600px; float: left; margin-left: 50px;" id = "divId">
+		<p>*상세정보</p>
+		<button id="newApply" type="button">신규(신청)</button>
+		<button id="save" type="button" disabled="disabled">저장</button>
+		<br>
+		
+		<div id = "div1">
+		<div class="mb-3 delete">
+		    <label for="simpleinput" class="form-label">신청구분</label>
+		    <input type="text" id="applyGubun" class="form-control" />
+		</div>
+		<div class="mb-3 delete">
+		    <label for="simpleinput" class="form-label">변동사유</label>
+		    <input type="text" id="changeReason1" class="form-control" readonly="readonly"/>
+		    
+			<select class="form-select" id="changeReason2" style="display: none">                
+	    		 		<option>개인사정</option>                                     
+	    		 		<option>질병</option>                                     
+	    		 		<option>타대학</option>                                   
+	    		 		<option>가사</option>                              
+	    		 		<option>취업</option>                                     
+	    		 		<option>유학</option>                                     
+	    	</select>  
+		</div>
+		<div class="mb-3 delete">
+		    <label for="simpleinput" class="form-label">기간</label>
+		    <input type="text" id="term" class="form-control" />
+		</div>
+		</div>
+		
+		<div class="mb-3">
+		    <label for="simpleinput" class="form-label">신청년도/학기</label>
+		    <input type="text" id="applyYear" class="form-control">
+		</div>
+		<div class="mb-3">
+		    <label for="simpleinput" class="form-label">종료년도/학기</label>
+		    <input type="text" id="endYear" class="form-control">
+		</div>
+		
+		<div class="mb-3">
+			<label for="example-month" class="form-label">상담확인</label>
+			<div class="form-check">
+				<input type="checkbox" class="form-check-input" id="counselYn" onclick="return false;">
+				<label class="form-check-label" for="customCheck1">상담 여부</label>
+			</div>
+		</div>
+
+<!-- 		<div class="mb-3 delete"> -->
+<!-- 		    <label for="simpleinput" class="form-label">신청구분</label> -->
+<!-- 		    <input type="text" id="applyGubun" class="form-control"/> -->
+<!-- 		</div> -->
+		
+<!-- 		<div id = "div1"> -->
+<!-- 		<div class="mb-3 delete"> -->
+<!-- 		    <label for="simpleinput" class="form-label">변동사유</label> -->
+<!-- 		    <input type="text" id="changeReason1" class="form-control" /> -->
+<!-- 		</div> -->
+<!-- 		<select class="form-select" id="changeReason2" style="display: none">                 -->
+<!--     		 		<option>개인사정</option>                                      -->
+<!--     		 		<option>질병</option>                                      -->
+<!--     		 		<option>타대학</option>                                    -->
+<!--     		 		<option>가사</option>                               -->
+<!--     		 		<option>취업</option>                                      -->
+<!--     		 		<option>유학</option>                                      -->
+<!--     	</select>   -->
+<!-- 		</div> -->
+		
+<!-- 		<div class="mb-3"> -->
+<!-- 		    <label for="simpleinput" class="form-label">신청년도/학기</label> -->
+<!-- 		    <input type="text" id="applyYear" class="form-control"> -->
+<!-- 		</div> -->
+<!-- 		<div class="mb-3"> -->
+<!-- 			<label for="example-month" class="form-label">상담확인</label> -->
+<!-- 			<div class="form-check"> -->
+<!-- 				<input type="checkbox" class="form-check-input" id="counselYn" onclick="return false;"> -->
+<!-- 				<label class="form-check-label" for="customCheck1">상담 여부</label> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
+	</div>
+
+</body>
+
+</html>

@@ -1,0 +1,247 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<!DOCTYPE html>
+<html>
+  <link rel="stylesheet" href="/resources/css/demo.css"/>
+  <link rel="stylesheet" href="/resources/css/gridstack.min.css">
+  <script type="text/javascript" src="/resources/js/jquery-3.6.0.js"></script>
+  <script src="https://gridstackjs.com/node_modules/gridstack/dist/gridstack-all.js"></script>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>메인페이지</title>
+
+<script type="text/javascript" src="/resources/js/jquery-3.6.0.js"></script>
+<style type="text/css">
+#topMain{
+	display : inline-block;
+	width : 100%;
+/* 	margin-left : 30px; */
+}
+.lock{
+	border: 2px solid black;
+	border-radius: 3%;
+/* 	width: 400px; */
+	width : 30%;
+	height: 400px;
+	display: inline-block;
+	float: left;
+	margin-left: 10px;
+}
+
+br{
+	clear: both;
+}
+
+.main{
+	margin: 0px, auto;
+}
+
+.stuInfo{
+	height: 60%;
+}
+
+.stuSer{
+	height: 30%;
+}
+
+.chat, .mail{
+	width: 49%;
+	display: inline-block;
+	float: left;
+	height: 100%;
+}
+.ptitle{
+ 	font-size : 1.3em;
+ 	float : left;
+ }
+ .removeBut{
+ 	float: right;
+ }
+ #ptable{
+ 	float: left;
+ 	border-collapse: collapse;
+ }
+ #saveBtn{
+ 	background:#2a5388;
+	box-shadow:#2a5388;
+	border:#2a5388;
+ }
+  #saveBtn:hover{
+ 	background:#4671af;
+	box-shadow:#4671af;
+	border:#4671af;
+ }
+ .mdi-leaf{
+ 	margin-left: 10px;
+ 	margin-right: 10px;
+ 	color : #2a5388;
+ }
+</style>
+<script type="text/javascript">
+	function fn_mail(){
+		window.open("/mail/mailAll");
+	}
+	
+	function showPopup() { 
+		window.open("/main/popupPortlet", "a", "width=1200, height=850, left=100, top=50"); 
+	}
+</script>
+</head>
+<body>
+<!-- 학생페이지 -->
+<!-- 
+session.setAttribute("data", res);
+session.setAttribute("mem", map);
+ -->
+<%-- ${sessionScope.mem.id} --%>
+<div id="topMain">
+<!-- <div class="container-fluid main"> -->
+
+<div>
+<div class="lock">
+	<div class="stuInfo">
+	
+	</div>
+	<hr>
+	<div class="stuSer">
+		<div class="chat">
+		</div>
+		<div class="mail">
+			<div onclick="fn_mail()" style="cursor:pointer;">메일</div>
+		</div>
+	</div>
+	<br>
+</div>
+<div class="lock"></div>
+<div class="lock"></div>
+<!-- </div> -->
+</div>
+<br>
+<!-- <button type="submit" onClick="location.href='logout'">로그아웃</button> -->
+
+    <br/><br/>
+    <div id="gridCont">
+    	<div class="grid-stack"></div>
+    </div>
+    <hr/>
+    <div style="display:none">
+    <textarea id="saved-data" cols="100" rows="20" readonly="readonly"></textarea>
+    </div>
+  </div>
+</body>
+
+  <script type="text/javascript">
+  	let grid = GridStack.init({
+      minRow: 1, // don't let it collapse when empty
+      cellHeight: '7rem'
+    });
+    
+	
+  	var RC001 = "";
+		RC001 += "<p id='RC001' class='deleteP' onClick = 'grid.removeWidget(this.parentNode.parentNode)'><i class='mdi mdi-close deleteIcon'></i></p>";
+		RC001 += "<p class='ptitle'><i class='mdi mdi-leaf'></i>학적변동조회</p>"
+	
+	var RC002 = "";
+		RC002 += "<p id='RC002' class='deleteP' onClick = 'grid.removeWidget(this.parentNode.parentNode)'><i class='mdi mdi-close deleteIcon'></i></p>";
+		RC002 += "<p class='ptitle'><i class='mdi mdi-leaf'></i>성적 조회</p>"
+
+	var RC003 = "";
+		RC003 += "<p id='RC003' class='deleteP' onClick = 'grid.removeWidget(this.parentNode.parentNode)'><i class='mdi mdi-close deleteIcon'></i></p>";
+		RC003 += "<p class='ptitle'><i class='mdi mdi-leaf'></i>상담신청 현황</p>"
+		
+	var RC004 = "";
+		RC004 += "<p id='RC004' class='deleteP' onClick = 'grid.removeWidget(this.parentNode.parentNode)'><i class='mdi mdi-close deleteIcon'></i></p>";
+		RC004 += "<p class='ptitle'><i class='mdi mdi-leaf'></i>수강신청 내역</p>"
+		
+	var RC005 = "";
+		RC005 += "<p id='RC005' class='deleteP' onClick = 'grid.removeWidget(this.parentNode.parentNode)'><i class='mdi mdi-close deleteIcon'></i></p>";
+		RC005 += "<p class='ptitle'><i class='mdi mdi-leaf'></i>결재 내역</p>"
+		
+	var RC006 = "";
+		RC006 += "<p id='RC006' class='deleteP' onClick = 'grid.removeWidget(this.parentNode.parentNode)'><i class='mdi mdi-close deleteIcon'></i></p>";
+		RC006 += "<p class='ptitle'><i class='mdi mdi-leaf'></i>당학기 강의조회</p>"
+	
+	var RC007 = ""
+		RC007 += "<p id='RC007' class='deleteP' onClick = 'grid.removeWidget(this.parentNode.parentNode)'><i class='mdi mdi-close deleteIcon'></i></p>";
+		RC007 += "<p class='ptitle'><i class='mdi mdi-leaf'></i>학사일정</p>"
+		
+	var RC008 = ""
+		RC008 += "<p id='RC008' class='deleteP' onClick = 'grid.removeWidget(this.parentNode.parentNode)'><i class='mdi mdi-close deleteIcon'></i></p>";
+		RC008 += "<p class='ptitle'><i class='mdi mdi-leaf'></i>오늘의 대기/날씨</p>"
+	
+	var RC009 = ""
+		RC009 += "<p id='RC009' class='deleteP' onClick = 'grid.removeWidget(this.parentNode.parentNode)'><i class='mdi mdi-close deleteIcon'></i></p>";
+		RC009 += "<p class='ptitle'><i class='mdi mdi-leaf'></i>공지사항</p>"
+		
+	var RC010 = ""
+		RC010 += "<p id='RC010' class='deleteP' onClick = 'grid.removeWidget(this.parentNode.parentNode)'><i class='mdi mdi-close deleteIcon'></i></p>";
+		RC010 += "<p class='ptitle'><i class='mdi mdi-leaf'></i>개인일정</p>"
+		
+	var RC011 = ""
+		RC011 += "<p id='RC011' class='deleteP' onClick = 'grid.removeWidget(this.parentNode.parentNode)'><i class='mdi mdi-close deleteIcon'></i></p>";
+		RC011 += "<p class='ptitle'><i class='mdi mdi-leaf'></i>뉴스</p>"
+	
+		let serializedData = [
+			<c:forEach var='list' items='${list}'>
+				{x: ${list.poX}, y: ${list.poY}, w: ${list.poW}, h: ${list.poH}, id: '${list.poCate}', content: ${list.poCate}}, 	
+			</c:forEach>
+		];
+
+    
+  	/* serializedData.forEach((n, i) =>
+   	n.content = `<button onClick="grid.removeWidget(this.parentNode.parentN ode)">X</button><br> ${i}<br> ${n.content ? n.content : ''}`);*/
+  	
+	$.each(serializedData, function(n, i){
+  		n.content = `<button onClick="grid.removeWidget(this.parentNode.parentNode)">X</button><br> ${i}<br> ${n.content ? n.content : ''}`;
+  	}) 
+  	let serializedFull;
+
+    // 2.x method - just saving list of widgets with content (default)
+    loadGrid = function() {
+      grid.load(serializedData, true); // update things
+    }
+
+    
+
+    // 3.1 full method saving the grid options + children (which is recursive for nested grids)
+    saveFullGrid = function() {
+      serializedFull = grid.save(true, true);
+      serializedData = serializedFull.children;
+      document.querySelector('#saved-data').value = JSON.stringify(serializedFull, null, '  ');
+    }
+
+    // 3.1 full method to reload from scratch - delete the grid and add it back from JSON
+    loadFullGrid = function() {
+      if (!serializedFull) return;
+      grid.destroy(true); // nuke everything
+      grid = GridStack.addGrid(document.querySelector('#gridCont'), serializedFull);
+    }
+
+    clearGrid = function() {
+      grid.removeAll();
+    };
+
+    loadGrid();
+    
+//     grid.on('resize change', function(e, items){
+//     	let str = '';
+//     	items.forEach(function(item) {
+//     		str += ' (w,h)=' + item.w +  ',' + item.h;
+//     		if(item.w < 4 || item.h < 4){
+//    	    	  //alert("4보다 작아졌어요!");
+//   	      }
+//     	}
+//     	);
+//     	console.log(str);
+//     })
+    
+    
+  </script>
+  
+  
+</html>

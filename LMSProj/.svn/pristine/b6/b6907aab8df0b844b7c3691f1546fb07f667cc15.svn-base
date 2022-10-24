@@ -1,0 +1,30 @@
+package kr.ac.lms.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.ac.lms.mapper.RegisterMapper;
+import kr.ac.lms.service.RegisterService;
+import kr.ac.lms.vo.LecApplyVO;
+
+@Service
+public class RegisterServiceImpl implements RegisterService {
+	
+	@Autowired
+	RegisterMapper registerMapper;
+
+	//수강신청 리스트 불러오기
+	@Override
+	public List<LecApplyVO> list(Map<String, Object> map) {
+		return this.registerMapper.list(map);
+	}
+
+	//포틀릿용 성적 조회 - 수강신청내역 불러오기
+	@Override
+	public List<LecApplyVO> ptlList(Map<String, Object> map) {
+		return this.registerMapper.ptlList(map);
+	}
+}

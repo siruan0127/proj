@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	namespace : xml파일은 여러개일 수 있음.
+	이를 구별하기 위한 식별 용도로 사용
+-->
+<mapper namespace="kr.ac.lms.mapper.StudentLectureMapper">
+
+	<resultMap type="lecApplyVO" id="lecApplyMap">
+		<result property="lecaCd" column="LECA_CD" />
+		<result property="subCd" column="SUB_CD" />
+		<result property="lecCd" column="LEC_CD" />
+		<result property="proCd" column="PRO_CD" />
+		<result property="lecaCate" column="LECA_CATE" />
+		<result property="lecaYr" column="LECA_YR" />
+		<result property="lecaSem" column="LECA_SEM" />
+		<result property="lecaNm" column="LECA_NM" />
+		<result property="lecaCon" column="LECA_CON" />
+		<result property="lecaTrg" column="LECA_TRG" />
+		<result property="lecaCrd" column="LECA_CRD" />
+		<result property="lecaPer" column="LECA_PER" />
+		<result property="lecaMax" column="LECA_MAX" />
+		<result property="lecaRoom" column="LECA_ROOM" />
+		<result property="lecaUnit" column="LECA_UNIT" />
+		<result property="lecaBook" column="LECA_BOOK" />
+		<result property="lecaNote" column="LECA_NOTE" />
+		<result property="lecaDt" column="LECA_DT" />
+		<result property="lecaGrade" column="LECA_GRADE" />
+		<result property="lecaImsi" column="LECA_IMSI" />
+		<result property="lecaYn" column="LECA_YN" />
+		<result property="lecaTt" column="LECA_TT" />
+		
+		<collection property="stuLecVOList" resultMap="stuLecVOMap"></collection>
+	</resultMap>
+
+	<resultMap type="stuLecVO" id="stuLecVOMap">
+		<result property="lecCd" column="LEC_CD" />
+		<result property="stuCd" column="STU_CD" />
+		<result property="slScore" column="SL_SCORE" />
+	</resultMap>
+
+	<!-- 학생 대시보드 -->
+	<select id="getStuLecList" parameterType="int" resultMap="lecApplyMap">
+		SELECT  S.LEC_CD, S.STU_CD, S.SL_SCORE
+		    ,   L.LECA_CD, L.SUB_CD, L.LEC_CD, L.PRO_CD, L.LECA_CATE, L.LECA_YR, L.LECA_SEM
+		    ,   L.LECA_NM, L.LECA_CON, L.LECA_TRG, L.LECA_CRD, L.LECA_PER, L.LECA_MAX, L.LECA_TM1
+		    ,   L.LECA_TM2, L.LECA_ROOM, L.LECA_UNIT, L.LECA_BOOK, L.LECA_NOTE, L.LECA_DT, L.LECA_GRADE
+		    ,   L.LECA_IMSI, L.LECA_YN, L.LECA_TT, L.LECA_RSN, L.LECA_GUBUN, L.LECA_ADT, L.MGR_CD
+		FROM STU_LEC S, LEC_APPLY L
+		WHERE S.LEC_CD = L.LEC_CD
+		AND STU_CD = #{stuCd}
+	</select>
+
+</mapper>

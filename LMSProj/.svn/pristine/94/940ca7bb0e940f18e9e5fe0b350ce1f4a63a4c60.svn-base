@@ -1,0 +1,108 @@
+package kr.ac.lms.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import kr.ac.lms.mapper.ApprovalMapper;
+import kr.ac.lms.service.ApprovalService;
+import kr.ac.lms.vo.ApprovalVO;
+import kr.ac.lms.vo.BuildingVO;
+import kr.ac.lms.vo.LecApplyVO;
+import kr.ac.lms.vo.MemberVO;
+import kr.ac.lms.vo.RoomVO;
+import kr.ac.lms.vo.WeekplanVO;
+
+@Service
+public class ApprovalServiceImpl implements ApprovalService{
+	
+	@Inject
+	private ApprovalMapper approvalMapper;
+	
+	//교수 결재 리스트 조회
+	@Override
+	public List<LecApplyVO> proApprovalList(int memCd) {
+		return this.approvalMapper.proApprovalList(memCd);
+	}
+
+	//교수 결재 검색리스트 조회
+	@Override
+	public List<LecApplyVO> proApprovalSearchList(Map<String, Object> map) {
+		return this.approvalMapper.proApprovalSearchList(map);
+	}
+	
+	//교수 결재 강의계획서 pdf
+	@Override
+	public LecApplyVO proApprovalPdf(Map<String, Object> map) {
+		return this.approvalMapper.proApprovalPdf(map);
+	}
+	
+	//교수 결재 반려 내역 조회
+	@Override
+	public List<LecApplyVO> returnHistory(int memCd) {
+		return this.approvalMapper.returnHistory(memCd);
+	}
+	
+	// 수업 계획서
+	@Override
+	public LecApplyVO getLecApply(Map<String, Object> lecApply) {
+		return this.approvalMapper.getLecApply(lecApply);
+	}
+	
+	// 수업 계획서 > 주차별 강의 내용
+	@Override
+	public List<WeekplanVO> getWeekPlan(int lecaCd){
+		return this.approvalMapper.getWeekPlan(lecaCd);
+	}
+	
+	//학사관리자 전체 결재 목록 조회(강의계획서)
+	@Override
+	public List<LecApplyVO> managerApprovalList(Map<String, String> map){
+		return this.approvalMapper.managerApprovalList(map);
+	}
+	
+	//학사관리자 전체 결재 목록 조회(장학생신청)
+	public List<LecApplyVO> managerApprovalListS(Map<String, String> map){
+		return this.approvalMapper.managerApprovalListS(map);
+	}
+	
+	//날짜 계산
+	@Override
+	public Map<String, Object> dateCal(){
+		return this.approvalMapper.dateCal();
+	}
+	
+	//학사관리자 강의계획서 결재 리스트
+	@Override
+	public List<LecApplyVO> mgrLecApprovalList(){
+		return this.approvalMapper.mgrLecApprovalList();
+	}
+
+	//학사관리자 강의계획서 결재 중 반려사유 update
+	@Override
+	public int lecApplyNoUpdate(Map<String, Object> map) {
+		return this.approvalMapper.lecApplyNoUpdate(map);
+	}
+
+	//강의실 배정 중 단과대 건물명 리스트 출력 
+	@Override
+	public List<BuildingVO> buildingList() {
+		return this.approvalMapper.buildingList();
+	}
+
+	//강의실 배정 중 단과대 별 호실 리스트 출력
+	@Override
+	public List<RoomVO> roomList(String bldNm) {
+		return this.approvalMapper.roomList(bldNm);
+	}
+	
+	//강의실 배정 중 LEC_CD를 통한 교수 및 강의 정보 출력
+	@Override
+	public LecApplyVO lecInfoSelect(int lecaCd) {
+		return this.approvalMapper.lecInfoSelect(lecaCd);
+	}
+	
+}

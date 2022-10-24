@@ -1,0 +1,100 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style type="text/css">
+#grid *{
+text-align: center;
+}
+</style>
+<link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+<script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+<script src="/resources/js/jquery-3.6.0.js"></script>
+<script>
+$(document).ready(function(){
+	var girdData;
+	var grid;
+	var test;
+	
+	var gridList = function(){ 
+		$.ajax({
+			url:"/scholarship/allHistoryGrid",
+			dataType:'json',
+			type: "POST",
+			success:function(result){
+					
+				$.each(result, function(i,v){
+					v.sclhAmt = v.sclhAmt.toLocaleString();
+					v.sclhSem = v.sclhSem + "학기";
+				})
+			
+				
+				grid = new tui.Grid({
+					el: document.getElementById('grid'), 
+					data : result,
+	 				scrollX : false, //옆위로 스크롤기능 막음
+	 				scrollY : false,
+	 				
+	 				rowHeaders: [{type: 'rowNum'}],
+					columns: [
+						{
+							header: '년도',
+							name: 'sclhDt',
+						},
+						{
+							header: '학기',
+							name: 'sclhSem'
+						},
+						{
+							header: '단과대학',
+							name: 'sclhRsn'
+						},
+						{
+							header: '학과',
+							name: 'sclhGubun'
+						},
+						{
+							header: '학번',
+							name: 'stuCd'
+						},
+						{
+							header: '이름',
+							name: 'memNm'
+						},
+						{
+							header: '장학명',
+							name: 'sclNm'
+						},
+						{
+							header: '금액',
+							name: 'sclhAmt'
+						}
+				
+					],
+				
+				});
+				
+			
+				}
+			})
+	}
+	
+	gridList();
+	
+})
+			
+</script>
+</head>
+<body>
+<div>
+<i class="mdi mdi-home" style="font-size: 1.3em"></i> <i class="dripicons-chevron-right"></i> 등록 및 장학 <i class="dripicons-chevron-right"></i> <span>장학금</span> <i class="dripicons-chevron-right"></i>
+<span style="font-weight: bold;">장학금조회</span>
+</div>
+<br><br>
+<p><i class="mdi mdi-record-circle" style="color: #001353;"></i>&ensp;전체 학생 장학금 내역 조회</p>
+<div id="grid"></div>
+</body>
+</html>

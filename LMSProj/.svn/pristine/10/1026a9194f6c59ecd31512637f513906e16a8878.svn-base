@@ -1,0 +1,109 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="/resources/js/jquery-3.6.0.js"></script>
+<script>
+$(function(){
+	
+	var cate = $('select[name=cnslCate]').attr('id');
+	$('select[name=cnslCate]').val(cate);
+	
+	var cnslRpl = $('textarea[name=cnslRpl]').val();
+
+	if(cnslRpl !=""){
+		
+	
+		$('textarea[name=cnslCon]').attr('disabled',true);
+		$('input[name=cnslTtl]').attr('disabled',true);
+		$('select[name=cnslCate]').attr('disabled',true);
+		$('#update').hide();
+	}
+	
+	
+	$('#update').on('click', function() {
+	      var result = confirm("내용 수정을 완료하시겠습니까?");
+	      if (result) {
+	    	  
+	    	 var cnslCate = $('select[name=cnslCate]').val();
+	         var cnslCon = $('textarea[name=cnslCon]').val();
+	         var cnslTtl = $('input[name=cnslTtl]').val();
+	         var cnslCd = $('textarea[name=cnslCon]').attr('id');
+	         
+	         console.log(cnslCate);
+	         console.log(cnslCon);
+	         console.log(cnslTtl);
+	         console.log(cnslCd);
+	         
+	         if (cnslCon != "" && cnslTtl !="") {
+
+	            $.ajax({
+	               url : "/counsel/modify",
+	               type : "POST",
+	               data : {
+	                  "cnslCd" : cnslCd,
+	                  "cnslCon" : cnslCon,
+	                  "cnslTtl" : cnslTtl,
+	                  "cnslCate" : cnslCate
+	               },
+	               dataType : "text",
+	               success : function(data) {
+	                  alert("내용수정이 완료되었습니다.");
+	                  location.href='/counsel/stuCounsel';
+	               }
+	            })
+
+	         } else {
+	            alert("빈 항목이 존재합니다. 글을 기입해주세요.")
+	         }
+	         }
+	      })
+
+	
+	
+})
+</script>
+</head>
+<body>
+
+
+
+<!-- Billing Content-->
+<div class="tab-pane show active" id="d1">
+    <div class="row">
+        <div class="col-lg-8">
+            <form>
+                <div class="row">
+                    <div class="col-md-6">
+                         <label for="billing-first-name" class="form-label">카테고리</label><br>
+                            <select class="form-select" name="cnslCate" id="${detail.CNSL_CATE }">
+                            	<c:forEach var="item" items="${cate }">
+                            		<option value="${item.comdCd}">${item.comdNm}</option>
+                            	</c:forEach>
+                            </select>
+                    </div>
+                    <div class="col-md-12">
+                            <label for="billing-last-name" class="form-label">제목</label>
+                            <input class="form-control" type="text" value="${detail.CNSL_TTL }" name="cnslTtl">
+                    </div>
+                    <div class="col-md-12">
+                    		<label for="billing-last-name" class="form-label">내용</label>
+                    	<textarea class="form-control" rows="5" name="cnslCon" id="${detail.CNSL_CD }">${detail.CNSL_CON }</textarea>
+                    </div>
+                    <div class="col-md-12">
+                    		<label for="billing-last-name" class="form-label">답변</label>
+                    	<textarea class="form-control" rows="5" name="cnslRpl" readonly="readonly">${detail.CNSL_RPL }</textarea>
+                    </div>
+                </div> <!-- end row -->
+   			</form>
+		</div>
+	</div>
+	<button type="button" class="btn btn-primary" onclick="location.href='/counsel/stuCounsel'">목록</button>
+	<button type="button" class="btn btn-primary" id='update' >수정</button>
+</div>
+</body>
+</html>

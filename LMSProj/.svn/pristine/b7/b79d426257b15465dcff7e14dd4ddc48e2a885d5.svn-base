@@ -1,0 +1,292 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>성적 정보</title>
+<script src="/resources/js/jquery-3.6.0.js"></script>
+<script type="text/javascript" src="/resources/js/tui-grid.js"></script>
+<link rel="stylesheet" href="/resources/css/tui-grid.css" type="text/css">
+<style type="text/css">
+	#personalGradeInfo, #tgradeYellowBox {
+		border : 1px solid lightgray;
+		margin : 10px;
+		padding : 10px;
+	}
+	label {
+		margin : 10px;
+	}
+	#tgradeYellowBox {
+		background : lightyellow;
+	}
+	#tgradeGreenText {
+		color : green;
+	}
+	#tgradeTable {
+		width : 80%;
+		height : 70px;
+		border : 1px solid lightgray;
+		border-collapse: collapse;
+		margin : 10px;
+		text-align : center;
+	}
+</style>
+</head>
+<script type="text/javascript">
+
+	function getCnt(yrNsem) {
+		
+		yrNsem = $(yrNsem).val();
+		
+		let dataObject = {
+			yrNsem : yrNsem
+		};
+		
+		$.ajax({
+			url : "/tgrade/getCnt",
+			type : "POST",
+			data : JSON.stringify(dataObject),
+			contentType : "application/json;charset=utf-8",
+			dataType : "JSON",
+			success : function(res) {
+
+				$("#tgradeSub").text(res);
+			}
+		});
+	}
+
+	function getListAgain(yrNsem) {
+		
+		yrNsem = $(yrNsem).val();
+		
+		let dataObject = {
+			yrNsem : yrNsem
+		};
+		
+		$.ajax({
+			url : "/tgrade/getListAgain",
+			type : "POST",
+			data : JSON.stringify(dataObject),
+			contentType : "application/json;charset=utf-8",
+			dataType : "JSON",
+			success : function(res) {
+				
+				//그리드 비우고 다시 불러오기
+				$('#grid').empty();
+				
+				grid = new tui.Grid({
+					el : document.getElementById('grid'),
+					data : res,
+					scrollX : true,
+					scrollY : true,
+					bodyHeight : 400,
+					columns : [
+						{header : '년도/학기', filter : 'select', name : 'lecaCon'},
+						{header : '과목번호', filter : 'select', name : 'subCd', align : 'center'},
+						{header : '교과목명', filter : 'select', name : 'lecaNm'},
+						{header : '이수구분', filter : 'select', name : 'lecaCate', align : 'center'},
+						{header : '학점', filter : 'select', name : 'lecaCrd', align : 'center'},
+						{header : '성적평가', filter : 'select', name : 'lecaGrade', align : 'center'},
+						{header : '등급', filter : 'select', name : 'lecaNote', align : 'center'},
+						{header : '평점', filter : 'select', name : 'lecaRoom', align : 'center'}
+					],
+					columnOptions : {
+						resizable : true
+					}
+				});
+			}
+		});
+	}
+	
+	window.onload = function() {
+		
+		//성적 건수 가져오기
+		getCnt();
+		
+		//개인정보 가져오기
+		$.ajax({
+			url : "/tgrade/getInfo",
+			type : "POST",
+			dataType : "JSON",
+			success : function(res) {
+				//학번(memCd), 이름(memNm), 생년월일(memReg1), 연락처(memTel),
+				//단과대학/전공(memNme), 입학정보(memAddr1), 변동(memAddr2), 수강신청학년(memMl)
+				$('#stuCd').val(res.memCd);
+				$('#memName').val(res.memNm);
+				$('#memReg1').val(res.memReg1);
+				$('#memTel').val(res.memTel);
+				$('#college').val(res.memNme);
+				$('#admission').val(res.memAddr1);
+				$('#admChange').val(res.memAddr2);
+				$('#yrNsem').val(res.memMl);
+			}
+		});
+		
+		//년도 및 학기 불러오기
+		$.ajax({
+			url : "/tgrade/getYrNSem",
+			type : "GET",
+			dataType : "JSON",
+			success : function(res) {
+				str = '';
+				
+				$.each(res, function(i, v) {
+					str += '<option value="'+ v.lecaYr + v.lecaSem + '">' + v.lecaYr + '/' + v.lecaSem + '학기</option>';
+				});
+				
+				$('#cateYrNSem').append(str);
+			}
+		});
+		
+		//전체 성적 불러오기
+		$.ajax({
+			url : "/tgrade/getList",
+			type : "POST",
+			dataType : "JSON",
+			success : function(res) {
+				
+				grid = new tui.Grid({
+					el : document.getElementById('grid'),
+					data : res,
+					scrollX : true,
+					scrollY : true,
+					bodyHeight : 400,
+					columns : [
+						{header : '년도/학기', filter : 'select', name : 'lecaCon'},
+						{header : '과목번호', filter : 'select', name : 'subCd', align : 'center'},
+						{header : '교과목명', filter : 'select', name : 'lecaNm'},
+						{header : '이수구분', filter : 'select', name : 'lecaCate', align : 'center'},
+						{header : '학점', filter : 'select', name : 'lecaCrd', align : 'center'},
+						{header : '성적평가', filter : 'select', name : 'lecaGrade', align : 'center'},
+						{header : '등급', filter : 'select', name : 'lecaNote', align : 'center'},
+						{header : '평점', filter : 'select', name : 'lecaRoom', align : 'center'}
+					],
+					columnOptions : {
+						resizable : true
+					}
+				});
+				
+// 				tui.Grid.applyTheme('default', {
+// 					  cell: {
+// 					    normal: {
+// 					      background: '#014386',
+// 					      border: '#0c4e91',
+// 					      text: '#fff',
+// 					    },
+// 					    head: {
+// 					      background: '#0b3f73',
+// 					      border: '#0b3f73',
+// 					      text: '#208be4',
+// 					    },
+// 					    rowHead: {
+// 					      border: ''
+// 					    },
+// 					    selectedHead: {
+// 					      background: '#0b3f73',
+// 					    },
+// 					    evenRow: {
+// 					      background: '#0c4e91',
+// 					    },
+// 					    oddRow: {
+// 					      background: '#014386'
+// 					    }
+// 					 }
+// 				});
+			}
+		});
+		
+	}
+</script>
+<body>
+	성적 > <b>전체 성적 조회</b>
+	<br><br>
+	
+	<div id = "personalGradeInfo">
+		<label>학번
+			<input type="text" name="stuCd" id="stuCd" readonly="readonly">
+			<button type="button" id="photoBtn">사진</button>
+		</label>
+		<label>이름
+			<input type="text" name="memName" id="memName" readonly="readonly">
+		</label>
+		<label>생년월일(성별)
+			<input type="text" name="memReg1" id="memReg1" readonly="readonly">
+		</label>
+		<label>연락처
+			<input type="text" name="memTel" id="memTel" readonly="readonly">
+		</label>
+		
+		<br><br>
+		
+		<label>단과대학/전공
+			<input type="text" name="college" id="college" readonly="readonly">
+		</label>
+		<label>입학정보
+			<input type="text" name="admission" id="admission" readonly="readonly">
+		</label>
+		<label>변동
+			<input type="text" name="admChange" id="admChange" readonly="readonly">
+		</label>
+		<label>수강신청학년(학기)
+			<input type="text" name="yrNsem" id="yrNsem" readonly="readonly">
+		</label>
+	</div>
+	
+	<br><br>
+	
+	<b>[취득성적]</b>
+	<button type="button" id="percentageTable">백분율환산기준표</button>
+	총 <span class="tgradeCnt" id="tgradeSub"></span>건
+	<div id="tgradeYellowBox">
+		<label>년도/학기
+			<select name="cateYrNSem" id="cateYrNSem" onchange="javascript:getListAgain(this);getCnt(this);">
+				<option value="">전체</option>
+			</select>
+		</label>
+		<span id="tgradeGreenText">현재 학기 성적은 조회할 수 없습니다.</span>
+	</div>
+	<br>
+	<div id="grid"></div>
+	
+	<br><br>
+	
+	<b>[집계정보]</b>
+	<br>
+	<table id="tgradeTable" border="1">
+		<tr>
+			<th colspan="2"></th>
+			<th colspan="5">교양영역</th>
+			<th colspan="5">전공영역</th>
+		</tr>
+		<tr>
+			<td>신청학점</td>
+			<td>취득학점</td>
+			<td>교필</td>
+			<td>교선</td>
+			<td>소계</td>
+			<td>평점 계</td>
+			<td>평균 평점</td>
+			<td>전필</td>
+			<td>전선</td>
+			<td>소계</td>
+			<td>평점 계</td>
+			<td>평균 평점</td>
+		</tr>
+		<tr>
+			<td>${totalCnt}</td>
+			<td>${tgrade.GP + tgrade.GS + tgrade.JP + tgrade.JS}</td>
+			<td>${tgrade.GP}</td>
+			<td>${tgrade.GS}</td>
+			<td>${tgrade.GCNT}</td>
+			<td>${tgrade.GSUM}</td>
+			<td>${tgrade.GDIV}</td>
+			<td>${tgrade.JP}</td>
+			<td>${tgrade.JS}</td>
+			<td>${tgrade.JCNT}</td>
+			<td>${tgrade.JSUM}</td>
+			<td>${tgrade.JDIV}</td>
+		</tr>
+	</table>
+</body>
+</html>

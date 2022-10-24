@@ -1,0 +1,71 @@
+package kr.ac.lms.vo;
+
+import java.util.Date;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
+public class TaskSubmitVO {
+	private int tsubCd;
+	private int taskCd;
+	private int lecCd;
+	private int stuCd;
+	private Date tsubDt;
+	private String tsubCon;
+	private String tsubFnm;
+	private int tsubScore;
+	
+	public int getTsubCd() {
+		return tsubCd;
+	}
+	public void setTsubCd(int tsubCd) {
+		this.tsubCd = tsubCd;
+	}
+	public int getTaskCd() {
+		return taskCd;
+	}
+	public void setTaskCd(int taskCd) {
+		this.taskCd = taskCd;
+	}
+	public int getLecCd() {
+		return lecCd;
+	}
+	public void setLecCd(int lecCd) {
+		this.lecCd = lecCd;
+	}
+	public int getStuCd() {
+		return stuCd;
+	}
+	public void setStuCd(int stuCd) {
+		this.stuCd = stuCd;
+	}
+	public Date getTsubDt() {
+		return tsubDt;
+	}
+	public void setTsubDt(Date tsubDt) {
+		this.tsubDt = tsubDt;
+	}
+	public String getTsubCon() {
+		return tsubCon;
+	}
+	public void setTsubCon(String tsubCon) {
+		this.tsubCon = tsubCon;
+	}
+	public String getTsubFnm() {
+		return tsubFnm;
+	}
+	public void setTsubFnm(String tsubFnm) {
+		this.tsubFnm = tsubFnm;
+	}
+	public int getTsubScore() {
+		return tsubScore;
+	}
+	public void setTsubScore(int tsubScore) {
+		this.tsubScore = tsubScore;
+	}
+	
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.DEFAULT_STYLE);
+	}
+}

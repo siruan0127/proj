@@ -1,0 +1,129 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<script src="/resources/js/jquery-3.6.0.js"></script>
+<script type="text/javascript" src="/resources/js/tui-grid.js"></script>
+<link rel="stylesheet" href="/resources/css/tui-grid.css" type="text/css">
+</head>
+<script type="text/javascript">
+	var gridData;
+	var grid;
+	var memCd = $('#memCdHidden').val();
+	
+
+	window.onload = function() {
+		
+		//전체 리스트 가져오기
+		$.ajax({
+			url : "/approval/proApprovalList",
+			type : 'GET',
+			dataType : 'JSON',
+			success : function(result) {
+				$.each(result, function(i,v){
+					result[i]['btn'] = '<button class="lecPlanBtn" data-leca-cd="'+ v.lecaCd + '">강의계획서 </button>';
+				});
+				
+				grid = new tui.Grid({
+					el : document.getElementById('grid'),
+					data : result,
+					scrollX : true,
+					scrollY : true,
+					minBodyHeight : 500,
+					bodyHeight: 250,
+					columns : [
+						{header : '과목명', name : 'lecaNm', width : 270, align : 'center'},
+						{header : '년도', name : 'lecaBook', filter : 'select', width : 150, align : 'center'},
+						{header : '학기', name : 'lecaNote', filter : 'select', width : 150, align : 'center'},
+						{header : '결재문서유형', name : 'lecaRoom', width : 200, align : 'center'},
+						{header : '등록일자', name : 'lecaDt', width : 200, align : 'center'},
+						{header : '승인일자', name : 'lecaAdt', width : 200, align : 'center'},
+						{header : '결재상태', name : 'lecaCon', filter : 'select', width : 150, align : 'center'},
+						{header : '강의계획서', name : 'btn', align : 'center'}
+					],
+					rowHeaders: ['rowNum'],
+					columnOptions: {
+				        resizable: true
+					}
+
+				});
+				//강의 계획서 버튼을 클릭했을 경우 해당 강의계획서 띄우기
+				$('.lecPlanBtn').on('click', function(){
+					lecaCd = $(this).data("lecaCd");
+					param = {"lecaCd" : lecaCd};
+					
+					$.ajax({
+						url : '/approval/lecApplyPdf',
+						type : 'post',
+						data : JSON.stringify(param),
+						dataType : 'JSON',
+						contentType : 'application/json;charset=utf-8',
+						success : function(result){
+							console.log(result);
+							window.open("/approval/lecApproPdfGet/" + lecaCd, "a", "width=1200, height=850, left=100, top=50"); 
+						}
+					})
+					
+				});
+				
+			    //반려내역 가져오기
+			    $.ajax({
+			       url : "/approval/returnHistory",
+			       type : 'POST',
+			       dataType : 'JSON',
+			       success : function(res){
+			          console.log(res);
+			          grid1 = new tui.Grid({
+			             el : document.getElementById('grid1'),
+			             data : res,
+			             scrollX : true,
+			             scrollY : true,
+			             minBodyHeight : 150,
+			             bodyHeight: 250,
+			             columns : [
+			                {header : '년도', name : 'lecaBook',filter : 'select',width : 100,align : 'center'},
+			                {header : '학기', name : 'lecaNote',filter : 'select',width : 100,align : 'center'},
+			                {header : '등록일자', name : 'lecaDt', width : 150, align : 'center'},
+			                {header : '승인일자', name : 'lecaAdt', width : 150, align : 'center'},
+			                {header : '과목명', name : 'lecaNm', width : 200, align : 'center'},
+			                {header : '결재상태', name : 'lecaCon', width : 80, align : 'center'},
+			                {header : '반려사유', name : 'apprRsn',align : 'center'}
+			               
+			             ],
+			             rowHeaders: ['rowNum'],
+			             columnOptions: {
+			                  resizable: true
+			              }
+			          });
+			       }
+			    });
+
+				
+				}
+				
+		
+
+		});
+		
+	      
+
+}
+
+	
+</script>
+<body>
+
+	<input type="hidden" id="memCdHidden" value="${memCd}" />
+	<br>
+	<b>[결재 내역]</b> &emsp;
+	<div id="grid"></div>
+
+	<br>
+	<br>
+
+	<b>[반려내역]</b> &emsp;
+	<div id="grid1"></div>
+</body>
+</html>

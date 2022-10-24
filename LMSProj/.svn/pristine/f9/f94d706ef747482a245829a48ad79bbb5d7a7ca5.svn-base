@@ -1,0 +1,66 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+#grid *{
+	text-align: center;
+}
+</style>
+<script src="/resources/js/jquery-3.6.0.js"></script>
+<link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+<script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+<script>
+$(document).ready(function(){
+	var girdData;
+	var grid;
+	
+	var gridList = function(){ 
+		
+		$.ajax({
+			url:"/scholarship/proHistoryGrid",
+			dataType:'json',
+			type: "POST",
+			success:function(result){
+					
+				girdData = JSON.stringify(result);
+				
+				grid = new tui.Grid({
+					el: document.getElementById('grid'), 
+					data : result,
+	 				scrollX : false, //옆위로 스크롤기능 막음
+	 				scrollY : false,
+	 				rowHeaders: [{type: 'rowNum'}],
+					
+					columns: [
+						{
+							header: '수여일자',
+							name: 'sclhDt'
+						},
+						{
+							header: '학번',
+							name: 'stuCd'
+						},
+						{
+							header: '이름',
+							name: 'sclhRsn'
+						}
+					
+					]
+				});
+			
+				}
+			})
+		}
+	
+	gridList();
+})
+</script>
+</head>
+<body>
+<div id="grid"></div>
+</body>
+</html>

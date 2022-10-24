@@ -1,0 +1,77 @@
+package kr.ac.lms.vo;
+
+import java.util.Date;
+import java.util.List;
+
+public class ProfessorVO {
+	private int proCd;
+	private int depCd;
+		private String depNm;
+	private Date proJoin;
+	private Date proRet;
+	private String proPos;
+	
+	private List<DepartmentVO> depCdList;
+	private List<CommonVO> proPosList;
+	
+	
+	
+	public List<DepartmentVO> getDepCdList() {
+		return depCdList;
+	}
+	public void setDepCdList(List<DepartmentVO> depCdList) {
+		this.depCdList = depCdList;
+	}
+	public List<CommonVO> getProPosList() {
+		return proPosList;
+	}
+	public void setProPosList(List<CommonVO> proPosList) {
+		this.proPosList = proPosList;
+	}
+	public int getProCd() {
+		return proCd;
+	}
+	public void setProCd(int proCd) {
+		this.proCd = proCd;
+	}
+	public int getDepCd() {
+		return depCd;
+	}
+	public void setDepCd(int depCd) {
+		this.depCd = depCd;
+	}
+	public Date getProJoin() {
+		return proJoin;
+	}
+	public void setProJoin(Date proJoin) {
+		this.proJoin = proJoin;
+	}
+	public Date getProRet() {
+		return proRet;
+	}
+	public void setProRet(Date proRet) {
+		this.proRet = proRet;
+	}
+	public String getProPos() {
+		return proPos;
+	}
+	public void setProPos(String proPos) {
+		this.proPos = proPos;
+	}
+	public String getDepNm() {
+		return depNm;
+	}
+	public void setDepNm(String depNm) {
+		this.depNm = depNm;
+	}
+	@Override
+	public String toString() {
+		return "ProfessorVO [proCd=" + proCd + ", depCd=" + depCd + ", depNm=" + depNm + ", proJoin=" + proJoin
+				+ ", proRet=" + proRet + ", proPos=" + proPos + ", depCdList=" + depCdList + ", proPosList="
+				+ proPosList + "]";
+	}
+	
+	
+	
+	
+}

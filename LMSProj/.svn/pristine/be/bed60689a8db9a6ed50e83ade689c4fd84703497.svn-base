@@ -1,0 +1,22 @@
+package kr.ac.lms.service;
+
+import java.util.HashMap;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import kr.ac.lms.vo.CommonDetailVO;
+import kr.ac.lms.vo.CounselVO;
+
+public interface CounselService {
+	public List<CommonDetailVO> cate();
+	public List<CounselVO> history(int stuCd);
+	public int save(CounselVO vo);
+	public CounselVO detail(int cnslCd);
+	public List<CounselVO> proHistory(int proCd);
+	public int reply(CounselVO vo);
+	public int modify(CounselVO vo);
+	public int delete(int cnslCd);
+	public List<CounselVO> portStuCounsel(int stuCd);
+	public List<CounselVO> portProCounsel(int proCd);
+}

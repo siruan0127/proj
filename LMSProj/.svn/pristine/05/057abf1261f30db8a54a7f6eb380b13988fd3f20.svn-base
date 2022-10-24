@@ -1,0 +1,109 @@
+package kr.ac.lms.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.ac.lms.mapper.TotalGradeMapper;
+import kr.ac.lms.service.TotalGradeService;
+import kr.ac.lms.vo.LecApplyVO;
+import kr.ac.lms.vo.MemberVO;
+import kr.ac.lms.vo.ObjectionVO;
+
+@Service
+public class TotalGradeServiceImpl implements TotalGradeService{
+
+	@Autowired
+	TotalGradeMapper totalGradeMapper;
+	
+	//개인정보 가져오기
+	@Override
+	public MemberVO getInfo(int memCd) {
+		return this.totalGradeMapper.getInfo(memCd);
+	}
+	
+	//년도 및 학기 가져오기
+	@Override
+	public List<LecApplyVO> getYrNSem(Map<String, Object> map) {
+		return this.totalGradeMapper.getYrNSem(map);
+	}
+	
+	//전체 성적 불러오기
+	@Override
+	public List<LecApplyVO> getList(Map<String, Object> map) {
+		return this.totalGradeMapper.getList(map);
+	}
+	
+	//현재 년도, 학기 가져오기
+	@Override
+	public Map<String, Object> getNow() {
+		return this.totalGradeMapper.getNow();
+	}
+
+	//성적 건수 가져오기
+	@Override
+	public int getCnt(Map<String, Object> map) {
+		return this.totalGradeMapper.getCnt(map);
+	}
+
+	//현재 학기 성적 불러오기
+	@Override
+	public List<LecApplyVO> getPreList(Map<String, Object> map) {
+		return this.totalGradeMapper.getPreList(map);
+	}
+
+	//전체 성적 불러오기
+	@Override
+	public Map<String, Object> getTgrade(Map<String, Object> map) {
+		return this.totalGradeMapper.getTgrade(map);
+	}
+
+	//신청학점 불러오기
+	@Override
+	public int getTcnt(Map<String, Object> map) {
+		return this.totalGradeMapper.getTcnt(map);
+	}
+
+	//강의정보 불러오기
+	@Override
+	public LecApplyVO getCourseInfo(int lecaCd) {
+		return this.totalGradeMapper.getCourseInfo(lecaCd);
+	}
+
+	//이의신청 여부 확인하기
+	@Override
+	public ObjectionVO checkObjection(Map<String, Object> map) {
+		return this.totalGradeMapper.checkObjection(map);
+	}
+
+	//이의신청하기
+	@Override
+	public int insertObjection(ObjectionVO objectionVO) {
+		return this.totalGradeMapper.insertObjection(objectionVO);
+	}
+
+	//사진 가져오기
+	@Override
+	public String getPhoto(int memCd) {
+		return this.totalGradeMapper.getPhoto(memCd);
+	}
+
+	/**
+	 * 성적 이의 신청 리스트 출력(교수)
+	 */
+	@Override
+	public List<ObjectionVO> objectionList(int proCd) {
+		return this.totalGradeMapper.objectionList(proCd);
+	}
+
+	/**
+	 * 성적 이의 신청 상세 정보 출력(교수)
+	 */
+	@Override
+	public ObjectionVO objDetail(int objCd) {
+		return this.totalGradeMapper.objDetail(objCd);
+	}
+
+}

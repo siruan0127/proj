@@ -1,0 +1,514 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html>
+<html>
+<head>
+<title>예비 수강신청</title>
+<script src="/resources/js/jquery-3.6.0.js"></script>
+<script type="text/javascript" src="/resources/js/tui-grid.js"></script>
+<link rel="stylesheet" href="/resources/css/tui-grid.css" type="text/css">
+<style type="text/css">
+	#pregisterListRound{
+		width : 94%;
+		margin-left : 12.5%;
+		margin-right : auto;
+	}
+	#personalInfo, #courseInfo {
+		border : 1px solid lightgray;
+		margin : 10px;
+		padding : 10px;
+	}
+	#personalInfo{
+		background : #f4f7fd;
+		text-align : center;
+	}
+	#personalInfo .round{
+		display : inline-block;
+		width : 30%;
+	}
+	#personalInfo .round:nth-child(2),
+	#personalInfo .round:nth-child(3)
+	{
+		width : 15%;
+	}
+	#personalInfo .round label {
+		display : inline-block;
+		margin-right : 10px;
+	}
+	#personalInfo .round input{
+		display : inline-block;
+	 	background: #f9f9f9;
+	 	border: 1px solid gray;
+	 	border-radius : 5px;
+	 	padding : 5px;
+	 	width : 60%;
+	}
+	#personalInfo .round:nth-child(2) input,
+	#personalInfo .round:nth-child(3) input
+	{
+		width : 30%;
+	}
+	#personalInfo .round:last-child input{
+		width : 40%;
+	}
+	#beRed {
+		color : rgb(225, 39, 64);
+		font-weight : bold;
+	}
+	.pregisterCnt {
+		display : inline-block;
+		width : 100px;
+		padding-left : 15px;
+	}
+	#courseInfo{
+		text-align : center;
+		background : #f4f7fd;
+	}
+	#courseInfo input,
+	#courseInfo select
+	{
+		background: #f9f9f9;
+	 	border: 1px solid gray;
+	 	border-radius : 5px;
+	 	padding : 5px;
+	}
+	#btn2GetList{
+		margin-left : 10px;
+	}
+	#grid td, #grid1 td{
+		background : #f9f9f9;
+	}
+	.addBtn{
+		background : #475b99;
+		border: 0.5px solid #777;
+		color : #fff;
+		padding:3px;
+		padding-left : 5px;
+		padding-right : 5px;
+		font-weight : bold;
+	}
+	.planFormBtn{
+		background : white;
+		border: 0.5px solid #777;
+		color : #777;
+		padding:3px;
+		font-weight : bold;
+		border-radius : 3px;
+	}
+	.delBtn{
+		background : #f4f4f4;
+		color : #e05a5a;
+		font-weight : bold;
+		border : 0.3px solid #999;
+		padding:3px;
+		padding-left : 5px;
+		padding-right : 5px;
+	}
+	#grid1{
+		margin-bottom : 30px;
+	}
+</style>
+</head>
+<script type="text/javascript">
+	var gridData;
+	var grid;
+	var grid1;
+	
+	function putWishList(lecaCd) {
+		$.ajax({
+			url : "/pregister/addWish",
+			type : "POST",
+			data : {lecaCd : lecaCd},
+			dataType : 'JSON',
+			success : function(res) {
+				
+				if(res == 1) {
+					alert("장바구니에 추가되었습니다.");
+				}else if(res == 2){
+					alert("이미 추가된 강의입니다.");
+				}else {
+					alert("다시 시도해주세요.");
+				}
+				
+				getWishListAgain();
+				getCnt();
+			}
+		});
+	}
+	
+	function removeWishList(lecaCd) {
+		//alert(lecaCd);
+		
+		$.ajax({
+			url : "/pregister/deleteWish",
+			type : "POST",
+			data : {lecaCd : lecaCd},
+			dataType : 'JSON',
+			success : function(res) {
+				
+				if(res == 1) {
+					alert("삭제되었습니다.");
+				}else {
+					alert("다시 시도해주세요.");
+				}
+				
+				getWishListAgain();
+				getCnt();
+			}
+		});
+	}
+	
+
+	//장바구니 추가 및 삭제할 때 장바구니 리스트 다시 불러오기
+	function getWishListAgain() {
+		$.ajax({
+			url : "/pregister/wishList",
+			type : "POST",
+			dataType : "JSON",
+			success : function(res) {
+				$('#grid1').empty();
+				
+				$.each(res, function(i,v){
+					res[i]['btn'] = '<button class="delBtn" onclick="removeWishList(' + v.lecaCd + ')">삭제</button>';
+					res[i]['btnPdf'] = '<button class="btn btn-outline-secondary btn-sm" style="font-family:Nunito,sans-serif;" onclick="getSyllabus(' + v.lecaCd + ',' + v.lecCd +')">강의계획서</button>';
+				});
+				
+				grid1 = new tui.Grid({
+					el : document.getElementById('grid1'),
+					data : res,
+					scrollX : true,
+					scrollY : true,
+					bodyHeight: 250,
+					rowHeaders : ["checkbox"],
+					columns : [
+						{header : '장바구니', name : 'btn', width : 100, align : 'center'},
+						{header : '개설학과', name : 'lecaCon', filter : 'select', width : 200, align : 'center'},
+						{header : '학년', name : 'lecaTrg', filter : 'select', width : 70, align : 'center'},
+						{header : '과목번호', name : 'subCd', filter : 'select', width : 120, align : 'center'},
+						{header : '과목명', name : 'lecaNm', filter : 'select'},
+						{header : '제한인원', name : 'lecaMax', width : 70, align : 'center'},
+						{header : '개설이수구분', name : 'lecaCate', width :100, align : 'center'},
+						{header : '학점', name : 'lecaCrd', width : 50, align : 'center'},
+						{header : '강의시간/강의실', name : 'lecaTt'},
+						{header : '담당교수', name : 'proNm', width : 100, align : 'center'},
+						{header : '성적평가방식', name : 'lecaGrade', width : 100, align : 'center'},
+						{header : '강의계획서', name : 'btnPdf', width : 100, align : 'center'}
+					],
+					columnOptions: {
+				        resizable: true
+				    }
+				});
+			}
+		});
+	}
+	
+	function getCnt() {
+		$.ajax({
+			url : "/pregister/getCnt",
+			type : "POST",
+			dataType : "JSON",
+			success : function(res) {
+				
+				pregisterCrd = res.CRD + ".0";
+				pregisterSub = res.SUB + "개";
+				
+				$('#pregisterCrd').text(pregisterCrd);
+				$('#pregisterSub').text(pregisterSub);
+			}
+		});
+	}
+	
+	//강의계획서 버튼 클릭 이벤트
+	function getSyllabus(lecaCd, proCd) {
+		
+		param = {"lecaCd" : lecaCd};
+		
+		$.ajax({
+			url : '/approval/lecApplyPdf',
+			type : 'post',
+			data : JSON.stringify(param),
+			dataType : 'JSON',
+			contentType : 'application/json;charset=utf-8',
+			success : function(result){
+				console.log(result);
+				window.open("/approval/lecApproPdfGetMgr/" + lecaCd +"/" + proCd, "a", "width=1200, height=850, left=100, top=50"); 
+			}
+		});
+	}
+	
+	window.onload = function() {
+		
+		//개인정보 가져오기
+		$.ajax({
+			url : "/pregister/getInfo",
+			type : "POST",
+			dataType : "JSON",
+			success : function(res) {
+				//console.log(res);
+				
+				$('#college').val(res.depNm);
+				$('#credit').val(res.stuMrc);
+				$('#myCredit').val(res.stuMoc);
+				$('#yrNsem').val(res.stuYr + "학년 (" + res.stuSem + "학기)");
+			}
+		});
+		
+		//전체 리스트 가져오기
+		$.ajax({
+			url : "/pregister/getList",
+			type : 'GET',
+			dataType : 'JSON',
+			success : function(res) {
+				/*
+					[{lecaCon:"", lecaTrg:"", btn},{btn},{btn}]
+				*/
+				$.each(res, function(i,v){
+					res[i]['btn'] = '<button class="addBtn" onclick="putWishList('+ v.lecaCd +')">추가</button>';
+					res[i]['btnPdf'] = '<button class="btn btn-outline-secondary btn-sm" style="font-family:Nunito,sans-serif;" onclick="getSyllabus(' + v.lecaCd + ',' + v.lecCd +')">강의계획서</button>';
+				});
+				//console.log(res);
+				grid = new tui.Grid({
+					el : document.getElementById('grid'),
+					data : res,
+					scrollX : true,
+					scrollY : true,
+					bodyHeight: 250,
+					rowHeaders : ["checkbox"],
+					columns : [
+						{header : '장바구니', name : 'btn', width : 100, align : 'center'},
+						{header : '개설학과', name : 'lecaCon', filter : 'select', width : 200, align : 'center'},
+						{header : '학년', name : 'lecaTrg', filter : 'select', width : 70, align : 'center'},
+						{header : '과목번호', name : 'subCd', filter : 'select', width : 120, align : 'center'},
+						{header : '과목명', name : 'lecaNm', filter : 'select'},
+						{header : '제한인원', name : 'lecaMax', width : 70, align : 'center'},
+						{header : '개설이수구분', name : 'lecaCate', width :100, align : 'center'},
+						{header : '학점', name : 'lecaCrd', width : 50, align : 'center'},
+						{header : '강의시간/강의실', name : 'lecaTt'},
+						{header : '담당교수', name : 'proNm', width : 100, align : 'center'},
+						{header : '성적평가방식', name : 'lecaGrade', width : 100, align : 'center'},
+						{header : '강의계획서', name : 'btnPdf', width : 100, align : 'center'}
+					],
+					columnOptions: {
+				        resizable: true
+				    }
+				});
+			}
+		});
+		
+		//개설학과 불러오기
+		$.ajax({
+			url : "/course/department",
+			type : "GET",
+			dataType : "JSON",
+			success : function(res) {
+				str = '';
+				
+				$.each(res, function(i, v) {
+					str += '<option value="' + v + '">' + v + '</option>';
+				});
+				
+				$('#department').append(str);
+			}
+		});
+		
+		//장바구니 리스트 불러오기
+		$.ajax({
+			url : "/pregister/wishList",
+			type : "POST",
+			dataType : "JSON",
+			success : function(res) {
+				
+				
+				$.each(res, function(i,v){
+					res[i]['btn'] = '<button class="delBtn" onclick="removeWishList(' + v.lecaCd + ')">삭제</button>';
+					res[i]['btnPdf'] = '<button class="btn btn-outline-secondary btn-sm" style="font-family:Nunito,sans-serif;" onclick="getSyllabus(' + v.lecaCd + ',' + v.lecCd +')">강의계획서</button>';
+				});
+				
+				grid1 = new tui.Grid({
+					el : document.getElementById('grid1'),
+					data : res,
+					scrollX : true,
+					scrollY : true,
+					bodyHeight: 250,
+					rowHeaders : ["checkbox"],
+					columns : [
+						{header : '장바구니', name : 'btn', width : 100, align : 'center'},
+						{header : '개설학과', name : 'lecaCon', filter : 'select', width : 200, align : 'center'},
+						{header : '학년', name : 'lecaTrg', filter : 'select', width : 70, align : 'center'},
+						{header : '과목번호', name : 'subCd', filter : 'select', width : 120, align : 'center'},
+						{header : '과목명', name : 'lecaNm', filter : 'select'},
+						{header : '제한인원', name : 'lecaMax', width : 70, align : 'center'},
+						{header : '개설이수구분', name : 'lecaCate', width :100, align : 'center'},
+						{header : '학점', name : 'lecaCrd', width : 50, align : 'center'},
+						{header : '강의시간/강의실', name : 'lecaTt'},
+						{header : '담당교수', name : 'proNm', width : 100, align : 'center'},
+						{header : '성적평가방식', name : 'lecaGrade', width : 100, align : 'center'},
+						{header : '강의계획서', name : 'btnPdf', width : 100, align : 'center'}
+					],
+					columnOptions: {
+				        resizable: true
+				    }
+				});
+			}
+		});
+		
+		//장바구니 총 학점, 총 과목수 가져오기
+		$.ajax({
+			url : "/pregister/getCnt",
+			type : "POST",
+			dataType : "JSON",
+			success : function(res) {
+				
+				pregisterCrd = res.CRD + ".0";
+				pregisterSub = res.SUB + "개";
+				
+				$('#pregisterCrd').text(pregisterCrd);
+				$('#pregisterSub').text(pregisterSub);
+			}
+		});
+		
+		//과목번호 및 과목명 입력 후 엔터키를 눌러도 조회 버튼 클릭으로 연결됨
+		var inputSubject = document.getElementById("subject");
+		
+		inputSubject.addEventListener("keyup", function(event) {
+	      if(event.keyCode === 13) {
+	        event.preventDefault();
+	        document.getElementById("btn2GetList").click();
+	      }
+	    });
+		
+		//버튼 눌러서 검색 리스트 불러오기
+		$('#btn2GetList').on('click', function() {
+			year = $('#year').val();
+			semester = $('#semester').val();
+			department = $('#department').val();
+			category = $('#category').val();
+			subject = $('#subject').val();
+			
+			let dataObject = {
+				year :  year,
+				semester : semester,
+				department : department,
+				category : category,
+				subject : subject
+			};
+			
+			$.ajax({
+				url : "/course/getListAgain",
+				type : "POST",
+				data : JSON.stringify(dataObject),
+				contentType : "application/json;charset=utf-8",
+				dataType : 'JSON',
+				success : function(res) {
+					$('#grid').empty();
+					
+					$.each(res, function(i,v){
+						res[i]['btn'] = '<button class="addBtn" onclick="putWishList('+ v.lecaCd +')">추가</button>';
+						res[i]['btnPdf'] = '<button class="btn btn-outline-secondary btn-sm" style="font-family:Nunito,sans-serif;" onclick="getSyllabus(' + v.lecaCd + ',' + v.lecCd +')">강의계획서</button>';
+					});
+					
+					grid = new tui.Grid({
+						el : document.getElementById('grid'),
+						data : res,
+						scrollX : true,
+						scrollY : true,
+						bodyHeight: 250,
+						rowHeaders : ["checkbox"],
+						columns : [
+							{header : '장바구니', name : 'btn', width : 100, align : 'center'},
+							{header : '개설학과', name : 'lecaCon', filter : 'select', width : 200, align : 'center'},
+							{header : '학년', name : 'lecaTrg', filter : 'select', width : 70, align : 'center'},
+							{header : '과목번호', name : 'subCd', filter : 'select', width : 120, align : 'center'},
+							{header : '과목명', name : 'lecaNm', filter : 'select'},
+							{header : '제한인원', name : 'lecaMax', width : 70, align : 'center'},
+							{header : '개설이수구분', name : 'lecaCate', width :100, align : 'center'},
+							{header : '학점', name : 'lecaCrd', width : 50, align : 'center'},
+							{header : '강의시간/강의실', name : 'lecaTt'},
+							{header : '담당교수', name : 'proNm', width : 100, align : 'center'},
+							{header : '성적평가방식', name : 'lecaGrade', width : 100, align : 'center'},
+							{header : '강의계획서', name : 'btnPdf', width : 100, align : 'center'}
+						],
+						columnOptions: {
+					        resizable: true
+					    }
+					});
+				}
+			});
+		});
+	}
+</script>
+<body>
+<div id="pregisterListRound">
+	<div>
+    	<i class="mdi mdi-home" style="font-size: 1.3em"></i> <i class="dripicons-chevron-right"></i> <span style="font-weight: bold;">예비수강신청</span>
+  	</div>
+	
+	<div id="personalInfo">
+		<div class="round">
+			<label>단과대학/전공</label>
+			<input type="text" name="college" id="college" readonly="readonly">
+		</div>
+		<div class="round">
+			<label>기준학점</label>
+			<input type="text" name="credit" id="credit" readonly="readonly">
+		</div>
+		<div class="round">
+			<label>신청가능학점</label>
+			<input type="text" name="myCredit" id="myCredit" readonly="readonly">
+		</div>
+		<div class="round">
+			<label>수강신청학년(학기)</label>
+			<input type="text" name="yrNsem" id="yrNsem" readonly="readonly">
+		</div>
+	</div>
+	
+	<div id="courseInfo">
+	<label>년도
+		<select name="year" id="year">
+			<option value="${map.YEAR}" selected>${map.YEAR}</option>
+		</select>
+	</label>
+	<label>학기
+		<select name="semester" id="semester">
+			<option value="${map.SEMESTER}" selected>${map.SEMESTER}학기</option>
+		</select>
+	</label>
+	<label>학과전공
+		<select name="department" id="department">
+			<option value="">전체</option>
+		</select>
+	</label>
+	<label>이수구분
+		<select name="category" id="category">
+			<option value="">전체</option>
+			<option value="전필" <c:if test="${param.year == '전필'}">selected</c:if>>전공필수(전필)</option>
+			<option value="전선" <c:if test="${param.year == '전선'}">selected</c:if>>전공선택(전선)</option>
+			<option value="교필" <c:if test="${param.year == '교필'}">selected</c:if>>교양필수(교필)</option>
+			<option value="교선" <c:if test="${param.year == '교선'}">selected</c:if>>교양선택(교선)</option>
+		</select>
+	</label>
+	<label>과목번호/명
+			<input type="text" name="subject" id="subject"> 미입력시 전체 조회
+	</label>
+	<button type="button" class="btn btn-secondary" id="btn2GetList">조회</button>
+	</div>
+	
+	<br>
+	
+	<b>[개설강좌]</b>
+	&emsp;
+	<span id="beRed">▶ 본 화면은 예비 수강신청 화면입니다. 실제 수강신청 확정은 수강신청 화면에서 이루어집니다.</span>
+	<br><br>
+	<div id="grid"></div>
+	
+	<br><br>
+	
+	<b>[장바구니 신청내역]</b>
+	&emsp;
+	신청학점 : <span class="pregisterCnt" id="pregisterCrd"></span>
+	신청과목수 : <span class="pregisterCnt" id="pregisterSub"></span>
+	<br><br>
+	<div id="grid1"></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,28 @@
+package kr.ac.lms.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.ac.lms.mapper.ScheduleMapper;
+import kr.ac.lms.service.ScheduleService;
+import kr.ac.lms.vo.ScheduleVO;
+
+@Service
+public class ScheduleServiceImpl implements ScheduleService{
+
+	@Autowired
+	private ScheduleMapper scheduleMapper;
+	
+	@Override
+	public List<ScheduleVO> allSchedule(int memCd) {
+		return scheduleMapper.allSchedule(memCd);
+	}
+
+	@Override
+	public int insert(ScheduleVO vo) {
+		return scheduleMapper.insert(vo);
+	}
+
+}

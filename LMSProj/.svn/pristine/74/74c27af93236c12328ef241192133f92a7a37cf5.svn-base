@@ -1,0 +1,149 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ID/비밀번호 찾기</title>
+<link rel="stylesheet" href="/resources/css/findID.css"/>
+<script type="text/javascript" src="/resources/js/jquery-3.6.0.js"></script>
+<script type="text/javascript">
+$(function(){
+	
+	$('#findId').on('click',function(){
+		$('#passForm').hide();
+		$('#findForm form').show();
+		$('#findId')
+		.css('background','#fff')
+		.css('color','#001353')
+		.css('border-bottom','none')
+		.css('opacity','70%');
+		
+		$('#findPass')
+		.css('background','#001353')
+		.css('color','#fff')
+		.css('border-bottom','3px solid #001353');
+		
+	})
+	
+	$('#findPass').on('click',function(){
+		$('#findForm form').hide();
+		$('#passForm').show();
+		$('#findPass')
+		.css('background','#fff')
+		.css('color','#001353')
+		.css('opacity','70%')
+		.css('border-bottom','none');
+		
+		$('#findId')
+		.css('background','#001353')
+		.css('color','#fff')
+		.css('border-bottom','3px solid #001353');
+	})
+	
+	$('#confirmId').on('click', function() {
+		
+		memNm = $('#memNm').val();
+		memReg1 = $('#memReg1').val();
+		depNm = $('#depNm').val();
+		
+		
+		$.ajax({
+			type: 'post',
+			url: '/login/confirmId',
+			data: { 
+					memNm : memNm,
+					memReg1 : memReg1,
+					depNm : depNm
+					},
+			success :function(res){
+				alert("회원님의 아이디는 " + res + "입니다.");
+			},
+			error: function(req, text) {
+				 alert(text + ': ' + req.status);
+		 	}
+		});
+	});
+	
+	
+$('#confirmPass').on('click', function() {
+	
+	let memCd = $("#memCd").val();
+	let tel = $('#tel').val();
+	let tel1 = $('#tel1').val();
+	let tel2 = $('#tel2').val();
+	
+	tel = tel + "-" + tel1 + "-" + tel2;
+	
+	let data = {"memCd":memCd,"tel":tel};
+	
+	console.log("data : " + JSON.stringify(data));
+	
+	$.ajax({
+		type: 'post',
+		url: '/login/confirmPass',
+		contentType:"application/json;charset=utf-8",
+		data:JSON.stringify(data),
+		success :function(res){
+			console.log("res : " + JSON.stringify(res));
+			alert(res + "\n(으)로 임시비밀번호를 전송하였습니다.");
+		},
+		error: function(req, text) {
+			 alert(text + ': ' + req.status);
+	 	}
+	});
+	
+});
+
+
+});
+</script>
+</head>
+<body>
+<div id="fullScreen">
+<img alt="이미지" src="/resources/images/campus2.png" id="img">
+
+<div id="findForm">
+<button id="findId">아이디 찾기</button>
+<button id="findPass">비밀번호 찾기</button>
+
+<form action="/login/hi" method="post">
+	<label>이름</label>
+	<input type="text" id="memNm"/>
+	<br>
+	<label>생년월일</label>
+	<input type="text" id="memReg1"/>
+	<br>
+	<label>학과</label>
+	<input type="text" id="depNm"/>
+	<br>
+	<button type="button" id="confirmId">확인</button>
+</form>
+
+
+<div id="passForm" style="display:none;">
+<label>ID</label>
+<input type="text" id="memCd"/>
+<br>
+<label>전화번호</label>
+<select id="tel">
+	<option selected>010</option>
+	<option>011</option>
+	<option>016</option>
+	<option>017</option>
+	<option>018</option>
+	<option>019</option>
+</select>
+-
+<input type="text" id="tel1"/>
+-
+<input type="text" id="tel2"/>
+<br>
+<button type="button" id="confirmPass">임시 비밀번호 전송</button>
+</div>
+
+<button id="loginPageBtn" onclick="location.href='/login/loginForm'">로그인</button>
+</div>
+
+</div>
+</body>
+</html>

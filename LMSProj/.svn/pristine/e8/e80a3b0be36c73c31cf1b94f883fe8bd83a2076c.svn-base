@@ -1,0 +1,24 @@
+package kr.ac.lms.vo;
+
+public class EvaluationQ {
+	private int evlqCd;
+	private String evlqCon;
+	public int getEvlqCd() {
+		return evlqCd;
+	}
+	public void setEvlqCd(int evlqCd) {
+		this.evlqCd = evlqCd;
+	}
+	public String getEvlqCon() {
+		return evlqCon;
+	}
+	public void setEvlqCon(String evlqCon) {
+		this.evlqCon = evlqCon;
+	}
+	@Override
+	public String toString() {
+		return "EvaluationQ [evlqCd=" + evlqCd + ", evlqCon=" + evlqCon + "]";
+	}
+	
+	
+}

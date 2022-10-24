@@ -1,0 +1,37 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<script type="text/javascript" src="/resources/ckeditor/ckeditor.js"></script>
+
+<style>
+	.underMargin {
+		margin-bottom: 10px;
+	}
+</style>
+
+<div class="col-lg-12 mt-3 mt-lg-0">
+
+	<h4 class="header-title mb-3">공지</h4>
+	<form:form method="post" modelAttribute="lecNoticeVO" action="/professorLecture/lecNotWritePost">
+		<form:input path="lecCd" value="${data.lecCd }"/>
+	
+		<div class="mb-3">
+			<form:input path="lntcTtl" 
+			class="form-control" maxlength="50" data-toggle="maxlength"	data-placement="top" placeholder="제목을 입력하세요" />
+		</div>
+	
+		<div class="underMargin">
+			<form:textarea path="lntcCon"></form:textarea>
+		</div>
+		
+		<button type="submit" class="btn btn-secondary">등록하기</button>
+		<a href="/professorLecture/lecNoticeList?lecCd=${data.lecCd }" class="btn btn-secondary">목록으로</a>
+	</form:form>
+</div>
+
+<script type="text/javascript">
+	CKEDITOR.replace("lntcCon");
+	
+	
+	
+</script>

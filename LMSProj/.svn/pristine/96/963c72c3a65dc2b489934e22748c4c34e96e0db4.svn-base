@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="kr.ac.lms.mapper.LecEvaluationMapper">
+<select id="stuLecList" parameterType="int" resultType="lecApplyVO">
+	WITH U AS(
+	SELECT  LECA_NM, 
+	        M.MEM_NM AS lecaCon, 
+	        L.SUB_CD, 
+	        L.LEC_CD,
+	        L.LECA_SEM || '학기' AS lecaRsn,
+	        (SELECT C.COMD_NM FROM COMMON_DETAIL C WHERE L.LECA_CATE = C.COMD_CD) AS lecaCate,
+	        CASE WHEN E.EVLQ_CD IS NULL THEN '미완료'
+	        ELSE '완료'
+	        END lecaNote,
+	        (CASE WHEN EXTRACT(MONTH FROM SYSDATE) IN ('8','9','10','11','12','1') THEN '2학기'
+	                WHEN EXTRACT(MONTH FROM SYSDATE) IN ('2','3','4','5','6','7') THEN '1학기'
+	           END) AS HAK
+	FROM    STU_LEC S, LEC_APPLY L, MEMBER M, EVALUATION E
+	WHERE   E.LEC_CD (+) = S.LEC_CD
+	AND     E.STU_CD (+) = S.STU_CD
+	AND     L.LEC_CD = S.LEC_CD
+	AND     M.MEM_CD = L.PRO_CD
+	AND     S.STU_CD = #{stuCd}
+	AND     L.LECA_YR = (SELECT EXTRACT(YEAR FROM SYSDATE) FROM DUAL)
+	)
+	SELECT U.*
+	FROM U
+	WHERE U.HAK = U.lecaRsn
+</select>
+
+<!-- 강의 평가 항목 불러오기 -->
+<select id="selectEvalItem" resultType="evaluationQVO">
+	SELECT EVLQ_CD, EVLQ_CON
+	FROM EVALUATION_Q
+</select>
+
+<!-- 학생 강의평가 저장 -->
+<insert id="insertStuEval" parameterType="hashMap">
+	INSERT INTO EVALUATION(EVLQ_CD, LEC_CD, STU_CD, EVL_SCORE, EVL_ETC)
+	VALUES(EVAL_SEQ.NEXTVAL, #{lecCd}, #{stuCd}, #{evlScore}, #{evlEtc})
+</insert>
+
+</mapper>

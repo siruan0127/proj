@@ -1,0 +1,33 @@
+package kr.ac.lms.vo;
+
+import java.util.Date;
+
+public class LecQnarVO {
+	private int lqnaCd;
+	private String lqnarCon;
+	private Date lqnarDt;
+	public int getLqnaCd() {
+		return lqnaCd;
+	}
+	public void setLqnaCd(int lqnaCd) {
+		this.lqnaCd = lqnaCd;
+	}
+	public String getLqnarCon() {
+		return lqnarCon;
+	}
+	public void setLqnarCon(String lqnarCon) {
+		this.lqnarCon = lqnarCon;
+	}
+	public Date getLqnarDt() {
+		return lqnarDt;
+	}
+	public void setLqnarDt(Date lqnarDt) {
+		this.lqnarDt = lqnarDt;
+	}
+	@Override
+	public String toString() {
+		return "LecQnarVO [lqnaCd=" + lqnaCd + ", lqnarCon=" + lqnarCon + ", lqnarDt=" + lqnarDt + "]";
+	}
+	
+	
+}

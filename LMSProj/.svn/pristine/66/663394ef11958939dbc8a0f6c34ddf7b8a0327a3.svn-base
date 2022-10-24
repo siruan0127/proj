@@ -1,0 +1,217 @@
+package kr.ac.lms.controller;
+
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+
+import kr.ac.lms.service.PaymentService;
+import kr.ac.lms.vo.CollegeVO;
+import kr.ac.lms.vo.DepartmentVO;
+import kr.ac.lms.vo.MemberVO;
+import kr.ac.lms.vo.PaymentVO;
+import kr.ac.lms.vo.StudentVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("/payment")
+public class PaymentController {
+	
+	@Autowired
+	private PaymentService service;
+	
+	//관리자 학생 납부내역 기본화면
+	@GetMapping("/adminPaymentList")
+	public String test(Model model) {
+		List<HashMap<String,Object>> hashmap = service.adminPaymentList();
+		model.addAttribute("list",hashmap);
+		return "payment/adminPaymentList";
+	}
+	
+	//관리자 등록금 그리드(ajax)
+	@ResponseBody
+	@PostMapping("/grid")
+	public List<HashMap<String,Object>> adminPaymentList(){
+				
+		List<HashMap<String,Object>> hashmap = service.adminPaymentList();
+		log.info("hashmap값"+ hashmap);
+		return hashmap;
+				
+	}
+	
+	//학생의 전체 등록금 납부내역 기본화면(ajax아님)
+	@GetMapping("/stuPaymentList")
+	public String stuPaymentList(Model model, HttpServletRequest request) {
+	  
+	    //int depCd = memVO.getStudentVO().getDepCd();
+	    int depCd = 1; //나중에 위의 세션에 추가
+		
+		int fee = service.fee(depCd);
+		model.addAttribute("fee",fee);
+		return "payment/stuPaymentList";
+	}
+	
+	@ResponseBody
+	@PostMapping("/stuPaymentListGrid")
+	public List<PaymentVO> stuPaymentListGrid(HttpServletRequest request){
+		HttpSession session = request.getSession();
+	    MemberVO memVO = (MemberVO) session.getAttribute("memSession");   
+	    int stuCd = memVO.getMemCd();
+	    List<PaymentVO> list= service.stuPaymentList(stuCd);
+	    return list;
+	}
+	
+	@ResponseBody
+	@PostMapping("/payDetailAjax")
+	public HashMap<String,Object> payDetailAjax(HttpServletRequest request, @RequestBody HashMap<String,Integer>map){
+		
+		int payCd = map.get("payCd");
+		log.info("페이시디" + payCd);
+		HttpSession session = request.getSession();
+	    MemberVO memVO = (MemberVO) session.getAttribute("memSession");   
+	    int stuCd = memVO.getMemCd();
+	    String memNm = memVO.getMemNm();
+	    int depCd = 1;
+	    
+	    map.put("stuCd", stuCd);
+	    map.put("depCd", depCd);
+	    
+	    HashMap<String, Object> detail = service.payDetail(map);
+	    detail.put("MEM_NM", memNm);
+		return detail;
+		
+	}
+	
+	//납부확인서 이동(관련 파라미터 넘긱기)
+	@GetMapping("/certificate")
+	public String certificate(Model model, @RequestParam("payCd") int payCd, HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		MemberVO memVO = (MemberVO) session.getAttribute("memSession"); 
+		int memCd = memVO.getMemCd();
+		String memNm = memVO.getMemNm();
+		String depNm = memVO.getDepNm();
+		System.out.println(depNm+"학과");
+		
+		//HashMap<String,Object> map = service.payDetail(payCd);
+		
+		//map.put("MEM_CD", memCd);
+		//map.put("DEP_NM", depNm);
+		//map.put("MEM_NM", memNm);
+		//model.addAttribute("map",map);
+		
+		return "payment/certificate";
+	}
+	
+	
+	//등록금 고지서 출력/등록금 납부 가능 화면
+	@GetMapping("/bill")
+	public String bill(Model model, HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		MemberVO memVO = (MemberVO) session.getAttribute("memSession");   
+		int stuCd = memVO.getMemCd();
+		log.info("stuCd1" + stuCd);
+		int stuSem = memVO.getStudentVO().getStuSem();
+		String memNm = memVO.getMemNm();
+		
+		//int depCd = 1; //나중에 세션에서 가져옴
+		//int fee = service.fee(depCd);
+		
+		HashMap<String, Object> map = service.bill(stuCd);
+		log.info("bill" + map);
+
+		//model.addAttribute("fee",fee);
+		//model.addAttribute("name",memNm);
+		model.addAttribute("map",map);
+		
+		
+		return "payment/bill";
+	}
+	
+	//등록금 납부 여부 확인 
+	@ResponseBody
+	@PostMapping("/billCount")
+	public int billCount(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		MemberVO memVO = (MemberVO) session.getAttribute("memSession");   
+		int stuCd = memVO.getMemCd();
+		log.info("stuCd2" + stuCd);
+		int cnt = service.billCount(stuCd);
+		log.info("cnt" + cnt);
+		return cnt;
+		
+	}
+
+
+	//카드결제
+	@GetMapping("/card")
+	public String toss() {
+		return "payment/card";
+	}
+	
+//	@ResponseBody
+//	@PostMapping("/pay")
+//	public int pay(@RequestBody Map<String,Object> map) {
+//		
+//		String payCd = (String)map.get("payCd");
+//		int result = service.pay(payCd);
+//		return result;
+//		
+//	}
+	
+	//등록금 고지할 재학생 리스트 
+	@GetMapping("/payNotice")
+	public String payNotice(Model model) {
+		
+		return "payment/payNotice";
+	}
+	
+	@ResponseBody
+	@PostMapping("/payNoticeGrid")
+	public List<HashMap<String,Object>> list(){
+		List<HashMap<String, Object>> list = service.attendList();
+		return list;
+	}
+	
+	//등록금 납부하기
+	@ResponseBody
+	@PostMapping("/insert")
+	public int insert(@RequestBody List<Map<String, Object>> param) {
+	log.info("jsonnnnnnnnnnn"+param);
+	int cnt = service.insert(param);
+	System.out.println(cnt);
+	return cnt;
+	}
+	
+	//엑셀 파라미터 값 가져오기
+//	@ResponseBody
+//	@PostMapping("/params")
+//	public String params(@RequestBody List<Map<String, Object>> parmas) {
+//		log.info("paramsssssssssssssssssss"+parmas);
+//		List<HashMap<String,Object>> bill = service.params(parmas);
+//		log.info("billllllllllllllll"+bill);
+//		String result = "성공";
+//		return result;
+//	}
+	
+	
+	
+
+}

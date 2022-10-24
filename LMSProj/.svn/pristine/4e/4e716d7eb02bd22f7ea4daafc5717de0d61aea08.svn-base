@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	namespace : xml파일은 여러개일 수 있음.
+	이를 구별하기 위한 식별 용도로 사용
+-->
+<mapper namespace="kr.ac.lms.mapper.ProfessorLectureMapper">
+
+	<resultMap type="memberVO" id="proMap">
+		<result property="memCd" column="MEM_CD" />
+		<result property="memNm" column="MEM_NM" />
+		<result property="memNme" column="MEM_NME" />
+		<result property="memTel" column="MEM_TEL" />
+		<result property="memZip" column="MEM_ZIP" />
+		<result property="memAddr1" column="MEM_ADDR1" />
+		<result property="memAddr2" column="MEM_ADDR2" />
+		<result property="memReg1" column="MEM_REG1" />
+		<result property="memReg2" column="MEM_REG2" />
+		<result property="memMl" column="MEM_ML" />
+		<result property="memPass" column="MEM_PASS" />
+		<result property="memBank" column="MEM_BANK" />
+		<result property="memDepo" column="MEM_DEPO" />
+		<result property="memAct" column="MEM_ACT" />
+		<result property="memFnm" column="MEM_FNM" />
+		<result property="memFpt" column="MEM_FPT" />
+	</resultMap>
+	<resultMap type="professorVO" id="professorMap">
+		<result property="proCd" column="PRO_CD" />
+		<result property="depCd" column="DEP_CD" />
+		<result property="proJoin" column="PRO_JOIN" />
+		<result property="proRet" column="PRO_RET" />
+		<result property="proPos" column="PRO_POS" />
+	</resultMap>
+	<resultMap type="commonDetailVO" id="commonDetailMap">
+		<result property="comdCd" column="COMD_CD" />
+		<result property="comCd" column="COM_CD" />
+		<result property="comdNm" column="COMD_NM" />
+		<result property="comdCon" column="COMD_CON" />
+	</resultMap>
+	<resultMap type="departmentVO" id="departmentMap">
+		<result property="depCd" column="DEP_CD" />
+		<result property="colCd" column="COL_CD" />
+		<result property="depNm" column="DEP_NM" />
+		<result property="depMrc" column="DEP_MRC" />
+		<result property="depMoc" column="DEP_MOC" />
+		<result property="depCrc" column="DEP_CRC" />
+		<result property="depCoc" column="DEP_COC" />
+		<result property="depMax" column="DEP_MAX" />
+		<result property="depTel" column="DEP_TEL" />
+	</resultMap>
+	<resultMap type="collegeVO" id="collegeMap">
+		<result property="colNm" column="COL_NM" />
+		<result property="colCrd" column="COL_CRD" />
+		<result property="colFee" column="COL_FEE" />
+	</resultMap>
+	<!-- 교수 정보  -->
+	<select id="getPro" resultMap="proMap">
+		SELECT  M.MEM_CD, M.MEM_NM, M.MEM_NME, M.MEM_TEL, M.MEM_ZIP
+		    ,   M.MEM_ADDR1, M.MEM_ADDR2, M.MEM_REG1, M.MEM_REG2
+		    ,   M.MEM_ML, M.MEM_PASS, M.MEM_BANK, M.MEM_DEPO, M.MEM_ACT
+		    ,   M.MEM_FNM, M.MEM_FPT
+		    ,   P.PRO_CD, P.DEP_CD, P.PRO_JOIN, P.PRO_RET
+		    ,   (SELECT COMD_NM FROM COMMON_DETAIL CD, PROFESSOR P WHERE CD.COMD_CD = P.PRO_POS) COMD_NM
+		    ,   (SELECT COL_NM FROM COLLEGE WHERE COL_CD = (SELECT D.COL_CD FROM DEPARTMENT D, PROFESSOR P WHERE D.DEP_CD = P.DEP_CD)) COL_NM
+		    ,   (SELECT D.DEP_NM FROM DEPARTMENT D, PROFESSOR P WHERE D.DEP_CD = P.DEP_CD) DEP_NM
+		FROM    MEMBER M, PROFESSOR P
+		WHERE   M.MEM_CD = P.PRO_CD
+	</select>
+	
+	
+	<!-- 
+		강의 목록  임의로 교수 코드 지정해놓음
+		parameterType="int"
+		PRO_CD = #{proCd}
+	-->
+	<select id="getProLecList" resultType="lecApplyVO" parameterType="int">
+		SELECT L.LECA_CD, L.SUB_CD, L.LEC_CD, L.PRO_CD, C1.COMD_NM AS LECA_CATE, L.LECA_YR, L.LECA_SEM, L.LECA_NM, L.LECA_CON
+		    , L.LECA_TRG, L.LECA_CRD, L.LECA_PER, L.LECA_MAX, L.LECA_TM1, L.LECA_TM2, L.LECA_ROOM, L.LECA_UNIT, L.LECA_BOOK
+		    , L.LECA_NOTE, L.LECA_DT, C2.COMD_NM AS LECA_GRADE, L.LECA_IMSI, L.LECA_YN 
+		FROM LEC_APPLY L INNER JOIN COMMON_DETAIL C1 ON(L.LECA_CATE = C1.COMD_CD) INNER JOIN COMMON_DETAIL C2 ON(L.LECA_GRADE = C2.COMD_CD)
+		WHERE PRO_CD = #{proCd}
+		AND LECA_YN = 1
+	</select>
+	
+	<!-- 년도 검색 -->
+	<select id="getLecaYr" parameterType="int" resultType="lecApplyVO">
+		SELECT DISTINCT LECA_YR
+		FROM LEC_APPLY
+		WHERE PRO_CD = #{proCd}
+		AND LECA_YN = 1
+	</select>
+	
+	<!-- 학기 검색 -->
+	<select id="getLecaSem" parameterType="hashMap" resultType="lecApplyVO">
+		SELECT LECA_SEM
+		FROM LEC_APPLY
+		WHERE PRO_CD = #{proCd}
+		AND LECA_YN = 1
+		AND LECA_YR = #{lecaYr}
+	</select>
+	
+	<!-- 강의 대시보드 > 사이버강의로 넘어가는 곳 -->
+	<select id="getProLecOne" parameterType="int" resultType="lecApplyVO">
+		SELECT L.LECA_CD, L.SUB_CD, L.LEC_CD, L.PRO_CD, C1.COMD_NM AS LECA_CATE, L.LECA_YR, L.LECA_SEM, L.LECA_NM, L.LECA_CON
+		    , L.LECA_TRG, L.LECA_CRD, L.LECA_PER, L.LECA_MAX, L.LECA_TM1, L.LECA_TM2, L.LECA_ROOM, L.LECA_UNIT, L.LECA_BOOK
+		    , L.LECA_NOTE, L.LECA_DT, C2.COMD_NM AS LECA_GRADE, L.LECA_IMSI, L.LECA_YN 
+		FROM LEC_APPLY L INNER JOIN COMMON_DETAIL C1 ON(L.LECA_CATE = C1.COMD_CD) INNER JOIN COMMON_DETAIL C2 ON(L.LECA_GRADE = C2.COMD_CD)
+		WHERE PRO_CD = 200231111
+		AND LECA_YN = 1
+		AND LEC_CD = #{lecCd}
+	</select>
+	
+	<!-- 강의 > 공지사항 목록 -->
+	<select id="lecNotList" parameterType="int" resultType="lecNoticeVO">
+		SELECT 	LNTC_CD
+		    , 	LEC_CD
+		    , 	LNTC_TTL
+		    , 	LNTC_CON
+		    , 	LNTC_REG
+		    , 	LNTC_UPD
+		FROM LEC_NOTICE
+		WHERE LEC_CD = #{lecCd}
+		ORDER BY LNTC_CD DESC
+	</select>
+	
+	<!-- 강의 > 공지사항 목록 > 공지사항 상세보기 -->
+	<select id="lecNotDetail" parameterType="int" resultType="lecNoticeVO">
+		SELECT LNTC_CD, LEC_CD, LNTC_TTL, LNTC_CON, LNTC_REG, LNTC_UPD
+		FROM LEC_NOTICE
+		WHERE LNTC_CD = #{lntcCd}
+	</select>
+	
+	<!-- 강의 > 공지사항 목록 > 공지사항 글 등록 -->
+	<insert id="lecNotInsert" parameterType="lecNoticeVO">
+		<selectKey order="BEFORE" resultType="int" keyProperty="lntcCd">
+			SELECT NVL(MAX(LNTC_CD),0)+1 FROM LEC_NOTICE
+		</selectKey>
+		INSERT INTO LEC_NOTICE(LNTC_CD, LEC_CD, LNTC_TTL, LNTC_CON, LNTC_REG, LNTC_UPD)
+		VALUES(#{lntcCd}, #{lecCd}, #{lntcTtl}, #{lntcCon}, SYSDATE, NULL)
+	</insert>
+	
+	<update id="lecNotUpdate" parameterType="lecNoticeVO">
+		UPDATE LEC_NOTICE
+		SET LNTC_TTL = #{lntcTtl}, LNTC_CON = #{lntcCon}, LNTC_UPD = SYSDATE
+		WHERE LNTC_CD = #{lntcCd}
+	</update>
+	
+	<delete id="lecNotDelete" parameterType="int">
+		DELETE FROM LEC_NOTICE
+		WHERE LNTC_CD = #{lntcCd}
+	</delete>
+	
+	
+	
+	<resultMap type="lecApplyVO" id="lecApplyMap">
+		<result property="lecaCd" column="LECA_CD" />
+		<result property="subCd" column="SUB_CD" />
+		<result property="lecCd" column="LEC_CD" />
+		<result property="proCd" column="PRO_CD" />
+		<result property="lecaCate" column="LECA_CATE" />
+		<result property="lecaYr" column="LECA_YR" />
+		<result property="lecaSem" column="LECA_SEM" />
+		<result property="lecaNm" column="LECA_NM" />
+		<result property="lecaCon" column="LECA_CON" />
+		<result property="lecaTrg" column="LECA_TRG" />
+		<result property="lecaCrd" column="LECA_CRD" />
+		<result property="lecaPer" column="LECA_PER" />
+		<result property="lecaMax" column="LECA_MAX" />
+		<result property="lecaRoom" column="LECA_ROOM" />
+		<result property="lecaUnit" column="LECA_UNIT" />
+		<result property="lecaBook" column="LECA_BOOK" />
+		<result property="lecaNote" column="LECA_NOTE" />
+		<result property="lecaDt" column="LECA_DT" />
+		<result property="lecaGrade" column="LECA_GRADE" />
+		<result property="lecaImsi" column="LECA_IMSI" />
+		<result property="lecaYn" column="LECA_YN" />
+		<result property="lecaTt" column="LECA_TT" />
+		
+		<collection property="memberVO" resultMap="memberVOMap"></collection>
+		<collection property="collegeVO" resultMap="collegeVOMap"></collection>
+		<collection property="departmentVO" resultMap="departmentVOMap"></collection>
+		<collection property="commonDetailVO" resultMap="commonDetailVOlMap"></collection>
+		<collection property="criteriaVO" resultMap="criteriaVOlMap"></collection>
+	</resultMap>
+	
+	<resultMap type="memberVO" id="memberVOMap">
+		<result property="memNm" column="MEM_NM"/>
+		<result property="memMl" column="MEM_ML"/>
+	</resultMap>
+	<resultMap type="collegeVO" id="collegeVOMap">
+		<result property="colNm" column="COL_NM"/>
+	</resultMap>
+	<resultMap type="departmentVO" id="departmentVOMap">
+		<result property="depNm" column="DEP_NM"/>
+		<result property="depTel" column="DEP_TEL"/>
+	</resultMap>
+	<resultMap type="commonDetailVO" id="commonDetailVOlMap">
+		<result property="comdCd" column="COMD_CD" />
+		<result property="comCd" column="COM_CD" />
+		<result property="comdNm" column="COMD_NM" />
+		<result property="comdCon" column="COMD_CON" />
+	</resultMap>
+	<resultMap type="criteriaVO" id="criteriaVOlMap">
+		<result property="crtrMp" column="CRTR_MP" />
+		<result property="crtrFp" column="CRTR_FP" />
+		<result property="crtrTp" column="CRTR_TP" />
+		<result property="crtrQp" column="CRTR_QP" />
+		<result property="crtrAp" column="CRTR_AP" />
+	</resultMap>
+	
+	<!-- 강의 > 수업계획서 조회 -->
+	<select id="getLecApply" parameterType="hashMap" resultMap="lecApplyMap">
+		SELECT  U.LECA_CD, U.LECA_CATE, U.LECA_YR, U.LECA_SEM, U.LECA_NM,
+		        NVL(U.LECA_CON, '등록된 설명이 없습니다.') LECA_CON,
+		        U.LECA_TRG, U.LECA_CRD, U.LECA_PER, U.LECA_MAX,
+		        NVL(U.LECA_ROOM, '지정된 건물이 없습니다.') LECA_ROOM,
+		        U.LECA_UNIT,
+		        NVL(U.LECA_BOOK, '등록된 교재가 없습니다.') LECA_BOOK,
+		        U.LECA_NOTE, U.LECA_DT,
+		        U.LECA_IMSI, U.LECA_YN, U.LEC_CD,  U.SUB_CD,
+		        (SELECT COMD_NM FROM COMMON_DETAIL WHERE COMD_CD = U.LECA_GRADE) COMD_NM,
+		        U.PRO_CD, U.MEM_NM, U.MEM_ML,
+		        U.COL_NM, U.DEP_NM, U.DEP_TEL,
+		        U.CRTR_MP, U.CRTR_FP, U.CRTR_TP, U.CRTR_QP, U.CRTR_AP,
+		        NVL(TRIM(U.MON 
+		           || ' ' || U.TUE 
+		           || ' ' || U.WED 
+		           || ' ' || U.THU
+		           || ' ' || U.FRI), ' - ') LECA_TT
+		FROM (
+			    SELECT  LECA_CD, SUB_CD, LEC_CD, PRO_CD, LECA_CATE,
+			            LECA_YR, LECA_SEM, LECA_NM, LECA_CON, LECA_TRG,
+			            LECA_CRD, LECA_PER, LECA_MAX, LECA_ROOM, LECA_UNIT,
+			            LECA_NOTE, LECA_BOOK, LECA_DT, LECA_IMSI, LECA_YN,
+			            MEM_NM, COL_NM, DEP_NM, MEM_ML, DEP_TEL,
+			            LECA_GRADE, CRTR_MP, CRTR_FP, CRTR_TP, CRTR_QP, CRTR_AP,
+			            MAX(MON) MON, MAX(TUE) TUE, MAX(WED) WED, MAX(THU) THU, MAX(FRI) FRI
+			    FROM VW_SUOMI
+			    GROUP BY LECA_CD, SUB_CD, LEC_CD, PRO_CD, LECA_CATE,
+			            LECA_YR, LECA_SEM, LECA_NM, LECA_CON, LECA_TRG,
+			            LECA_CRD, LECA_PER, LECA_MAX, LECA_ROOM, LECA_UNIT,
+			            LECA_NOTE, LECA_BOOK, LECA_DT, LECA_IMSI, LECA_YN,
+			            MEM_NM, COL_NM, DEP_NM, MEM_ML, DEP_TEL,
+			            LECA_GRADE, CRTR_MP, CRTR_FP, CRTR_TP, CRTR_QP, CRTR_AP
+		) U
+		WHERE U.LEC_CD = #{lecCd}
+	</select>
+	
+	<!-- 강의 > 수업계획서 > 주차별 강의 내용 조회 -->
+	<select id="getWeekPlan" parameterType="int" resultType="weekplanVO">
+		SELECT  W.WP_NO
+		    ,   W.WP_CON
+		FROM WEEKPLAN W, LEC_APPLY LA
+		WHERE W.LECA_CD = LA.LECA_CD
+		AND   W.LECA_CD = #{lecaCd}
+	</select>
+	
+	<!-- 퀴즈 게시판 조회 -->
+	<select id="quizBoardList" parameterType="int" resultType="testVO">
+		WITH U AS(
+		    SELECT ROW_NUMBER() OVER(ORDER BY T.TEST_CD ASC) RNUM, T.*
+		    FROM(
+		            SELECT  TEST_CD,
+				        LEC_CD,
+				        TEST_NM,
+				        TEST_CON,
+				        TEST_REG,
+				        TEST_ST,
+				        TEST_ET
+				FROM    TEST
+				WHERE 	LEC_CD = #{lecCd}
+		    )T
+		)
+		SELECT U.*
+		FROM U
+	</select>
+	
+	
+	<resultMap type="testVO" id="testVOMap">
+		
+		<id property="testCd" column="TEST_CD"/>
+		<result property="lecCd" column="LEC_CD"/>
+		<result property="testNm" column="TEST_NM"/>
+		<result property="testCon" column="TEST_CON"/>
+		<result property="testReg" column="TEST_REG"/>
+		<result property="testSt" column="TEST_ST"/>
+		<result property="testEt" column="TEST_ET"/>
+		<result property="rnum" column="RNUM" />
+		
+		<collection property="testQVOList" resultMap="testQVOMap"></collection>
+	</resultMap>
+	
+	<resultMap type="testQVO" id="testQVOMap">
+		<id property="teqCd" column="TEQ_CD" />
+		<result property="teqNo" column="TEQ_NO" />
+		<result property="teqOp1" column="TEQ_OP1" />
+		<result property="teqOp2" column="TEQ_OP2" />
+		<result property="teqOp3" column="TEQ_OP3" />
+		<result property="teqOp4" column="TEQ_OP4" />
+		<result property="teqAnswer" column="TEQ_ANSWER" />
+		<result property="rnum" column="RNUM" />
+	</resultMap>
+	
+	<!-- 퀴즈 내용 조회 -->
+	<select id="quizDetail" parameterType="int" resultMap="testVOMap">
+		WITH U AS(
+		    SELECT ROW_NUMBER() OVER(ORDER BY T.TEQ_CD ASC) RNUM, T.*
+		    FROM(
+		            SELECT  T.LEC_CD, T.TEST_CD, T.TEST_NM, T.TEST_CON, T.TEST_REG,
+		                    T.TEST_ST, T.TEST_ET, TQ.TEQ_CD, TQ.TEQ_NO,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+		                    TQ.TEQ_OP1, TQ.TEQ_OP2, TQ.TEQ_OP3,
+		                    TQ.TEQ_OP4, TQ.TEQ_ANSWER
+		            FROM    TEST_Q TQ, TEST T
+		            WHERE   1 = 1
+		            AND     TQ.TEST_CD = T.TEST_CD
+		            AND     TQ.TEST_CD = #{testCd}
+		    )T
+		)
+		SELECT U.*
+		FROM U
+	</select>
+	
+	<!-- 퀴즈 등록 -->
+	<insert id="quizInsert" parameterType="testVO">
+	
+		<selectKey order="BEFORE" resultType="int" keyProperty="testCd">
+			SELECT NVL(MAX(TEST_CD),0)+1 FROM TEST
+		</selectKey>
+		INSERT INTO TEST (
+		    TEST_CD,
+		    LEC_CD,
+		    TEST_NM,
+		    TEST_CON,
+		    TEST_REG,
+		    TEST_ST,
+		    TEST_ET
+		) VALUES (
+		    #{testCd},
+		    #{lecCd},
+		    NULL,
+		    NULL,
+		    SYSDATE,
+		    NULL,
+		    NULL
+		)
+	</insert>
+	
+	<!-- 퀴즈 등록 > 제출 -->
+	<update id="quizInsertUpdate" parameterType="testVO">
+		UPDATE TEST
+		SET 
+		TEST_NM = #{testNm}, TEST_CON = #{testCon}, TEST_REG = SYSDATE, TEST_ST = #{testSt}, TEST_ET = #{testEt}
+		WHERE TEST_CD = #{testCd}
+	</update>
+	
+	<!-- 퀴즈 내용 등록 -->
+	<!-- TestQVO [teqCd=0, testCd=35, teqNo=d, teqOp1=d, teqOp2=d, teqOp3=d, teqOp4=d, teqAnswer=3, rnum=0] -->
+	<update id="quizQInsert" parameterType="list">
+		
+		INSERT INTO TEST_Q(TEQ_CD, TEST_CD, TEQ_NO, TEQ_OP1, TEQ_OP2, TEQ_OP3, TEQ_OP4, TEQ_ANSWER)
+		SELECT TEQ_SEQ.NEXTVAL AS TEQ_CD
+		, T.* 
+		FROM(
+		 <foreach collection="list" item="testQVO" separator="UNION ALL">
+		    SELECT 	#{testQVO.testCd},
+				    #{testQVO.teqNo},
+				    #{testQVO.teqOp1},
+				    #{testQVO.teqOp2},
+				    #{testQVO.teqOp3},
+				    #{testQVO.teqOp4},
+				    #{testQVO.teqAnswer}
+		     FROM DUAL
+		 </foreach>
+		)T
+		
+	</update>
+</mapper>

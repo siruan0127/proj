@@ -1,0 +1,164 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>성적 이의 신청</title>
+<script src="/resources/js/jquery-3.6.0.js"></script>
+<script type="text/javascript" src="/resources/js/tui-grid.js"></script>
+<link rel="stylesheet" href="/resources/css/tui-grid.css" type="text/css">
+<style type="text/css">
+	#personalGradeInfo, #tgradeYellowBox {
+		border : 1px solid lightgray;
+		margin : 10px;
+		padding : 10px;
+	}
+	label {
+		margin : 10px;
+	}
+	#tgradeYellowBox {
+		background : lightyellow;
+	}
+	#tgradeGreenText {
+		color : green;
+	}
+</style>
+</head>
+<script type="text/javascript">
+
+	window.onload = function() {
+		
+		//개인정보 가져오기
+		$.ajax({
+			url : "/tgrade/getInfo",
+			type : "POST",
+			dataType : "JSON",
+			success : function(res) {
+				//학번(memCd), 이름(memNm), 생년월일(memReg1), 연락처(memTel),
+				//단과대학/전공(memNme), 입학정보(memAddr1), 변동(memAddr2), 수강신청학년(memMl)
+				$('#stuCd').val(res.memCd);
+				$('#memName').val(res.memNm);
+				$('#memReg1').val(res.memReg1);
+				$('#memTel').val(res.memTel);
+				$('#college').val(res.memNme);
+				$('#admission').val(res.memAddr1);
+				$('#admChange').val(res.memAddr2);
+				$('#yrNsem').val(res.memMl);
+			}
+		});
+		
+		//년도 및 학기 불러오기
+		$.ajax({
+			url : "/tgrade/getNow",
+			type : "GET",
+			dataType : "JSON",
+			success : function(res) {
+				$("#tgradePreYear").val(res.YEAR);
+				$("#tgradePreSemester").val(res.SEMESTER);
+			}
+		});
+		
+		$.ajax({
+			url : "/tgrade/getPreCnt",
+			type : "POST",
+			dataType : "JSON",
+			success : function(res) {
+				
+				$("#tgradePreSub").text(res);
+			}
+		});
+		
+		//전체 성적 불러오기
+		$.ajax({
+			url : "/tgrade/getPreList",
+			type : "POST",
+			dataType : "JSON",
+			success : function(res) {
+				
+				$.each(res, function(i,v){
+					res[i]['btn'] = '<button onclick="gradeAppeal()" data-leca-cd="' + v.lecCd + '">신청</button>';
+				});
+				
+				grid = new tui.Grid({
+					el : document.getElementById('grid'),
+					data : res,
+					scrollX : true,
+					scrollY : true,
+					bodyHeight : 400,
+					columns : [
+						{header : '년도/학기', filter : 'select', name : 'lecaCon'},
+						{header : '과목번호', filter : 'select', name : 'subCd', align : 'center'},
+						{header : '교과목명', filter : 'select', name : 'lecaNm'},
+						{header : '이수구분', filter : 'select', name : 'lecaCate', align : 'center'},
+						{header : '학점', filter : 'select', name : 'lecaCrd', align : 'center'},
+						{header : '성적평가', filter : 'select', name : 'lecaGrade', align : 'center'},
+						{header : '등급', filter : 'select', name : 'lecaNote', align : 'center'},
+						{header : '평점', filter : 'select', name : 'lecaRoom', align : 'center'},
+						{header : '성적이의신청', name : 'btn', align : 'center'}
+					],
+					columnOptions : {
+						resizable : true
+					}
+				});
+			}
+		});
+		
+	}
+</script>
+<body>
+	성적 > <b>성적 이의 신청</b>
+	<br><br>
+	
+	<div id = "personalGradeInfo">
+		<label>학번
+			<input type="text" name="stuCd" id="stuCd" readonly="readonly">
+			<button type="button" id="photoBtn">사진</button>
+		</label>
+		<label>이름
+			<input type="text" name="memName" id="memName" readonly="readonly">
+		</label>
+		<label>생년월일(성별)
+			<input type="text" name="memReg1" id="memReg1" readonly="readonly">
+		</label>
+		<label>연락처
+			<input type="text" name="memTel" id="memTel" readonly="readonly">
+		</label>
+		
+		<br><br>
+		
+		<label>단과대학/전공
+			<input type="text" name="college" id="college" readonly="readonly">
+		</label>
+		<label>입학정보
+			<input type="text" name="admission" id="admission" readonly="readonly">
+		</label>
+		<label>변동
+			<input type="text" name="admChange" id="admChange" readonly="readonly">
+		</label>
+		<label>수강신청학년(학기)
+			<input type="text" name="yrNsem" id="yrNsem" readonly="readonly">
+		</label>
+	</div>
+	
+	<br><br>
+	
+	<b>[취득성적]</b>
+	<button type="button" id="percentageTable">백분율환산기준표</button>
+	총 <span class="tgradePreCnt" id="tgradePreSub"></span>건
+	<div id="tgradeYellowBox">
+		<label>년도
+			<input type="text" name="yrNsem" id="tgradePreYear" readonly="readonly">
+		</label>
+		<label>학기
+			<input type="text" name="yrNsem" id="tgradePreSemester" readonly="readonly">
+		</label>
+		<span id="tgradeGreenText">증명 마감된 과목에 한해 성적이 표기됩니다.</span>
+	</div>
+	<br>
+	<div id="grid"></div>
+	
+	<br><br>
+	
+</body>
+</html>

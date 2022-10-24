@@ -1,0 +1,69 @@
+package kr.ac.lms.vo;
+
+import java.util.Date;
+
+public class ObjectionVO {
+	private int objCd;
+	private int lecCd;
+	private int stuCd;
+	private String objTtl;
+	private String objCon;
+	private Date objDt;
+	private int objYn;
+	private String objRpl;
+	public int getObjCd() {
+		return objCd;
+	}
+	public void setObjCd(int objCd) {
+		this.objCd = objCd;
+	}
+	public int getLecCd() {
+		return lecCd;
+	}
+	public void setLecCd(int lecCd) {
+		this.lecCd = lecCd;
+	}
+	public int getStuCd() {
+		return stuCd;
+	}
+	public void setStuCd(int stuCd) {
+		this.stuCd = stuCd;
+	}
+	public String getObjTtl() {
+		return objTtl;
+	}
+	public void setObjTtl(String objTtl) {
+		this.objTtl = objTtl;
+	}
+	public String getObjCon() {
+		return objCon;
+	}
+	public void setObjCon(String objCon) {
+		this.objCon = objCon;
+	}
+	public Date getObjDt() {
+		return objDt;
+	}
+	public void setObjDt(Date objDt) {
+		this.objDt = objDt;
+	}
+	public int getObjYn() {
+		return objYn;
+	}
+	public void setObjYn(int objYn) {
+		this.objYn = objYn;
+	}
+	public String getObjRpl() {
+		return objRpl;
+	}
+	public void setObjRpl(String objRpl) {
+		this.objRpl = objRpl;
+	}
+	@Override
+	public String toString() {
+		return "ObjectionVO [objCd=" + objCd + ", lecCd=" + lecCd + ", stuCd=" + stuCd + ", objTtl=" + objTtl
+				+ ", objCon=" + objCon + ", objYn=" + objYn + ", objRpl=" + objRpl + "]";
+	}
+	
+	
+}

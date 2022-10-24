@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="kr.ac.lms.mapper.CounselMapper">
+
+<!-- 공통에서 상담카테고리 불러오기 -->
+<select id="cate" resultType="CommonDetailVO">
+SELECT * FROM COMMON_DETAIL WHERE COM_CD='C1'
+</select>
+
+<!-- 본인의 전체 상담기록 불러오기 -->
+<select id="history" resultType="hashmap" parameterType="int">
+SELECT 
+A.CNSL_CD
+, A.CNSL_TTL
+, A.CNSL_CON
+, A.CNSL_REG
+, A.CNSL_DT
+, A.CNSL_RPL
+, A.CNSL_YN
+, B.COMD_NM 
+FROM COUNSEL A, COMMON_DETAIL B 
+WHERE 
+A.CNSL_CATE = B.COMD_CD 
+AND STU_CD = #{stuCd}
+ORDER BY CNSL_REG DESC
+</select>
+
+<!-- 본인 상담기록 하나 불러오기 -->
+<select id="Stuone" resultType="hashmap" parameterType="String">
+SELECT 
+A.CNSL_CD
+, A.CNSL_TTL
+, A.CNSL_CON
+, A.CNSL_REG
+, A.CNSL_DT
+, A.CNSL_RPL
+, A.CNSL_YN
+, B.COMD_NM 
+FROM COUNSEL A, COMMON_DETAIL B 
+WHERE 
+A.CNSL_CATE = B.COMD_CD 
+AND CNSL_CD = #{cnslCd}
+</select>
+
+
+<!-- 상담신청하기 -->
+<insert id="save" parameterType="CounselVO">
+INSERT INTO COUNSEL VALUES(
+COUNSEL_SEQ.NEXTVAL
+,#{stuCd}
+,#{cnslTtl}
+,#{cnslCon}
+,SYSDATE
+,NULL
+,NULL
+,'상담전' 
+,#{cnslCate})
+</insert>
+
+<!-- 교수의 학생 상담 보기 -->
+<select id="proHistory" resultType="hashmap" parameterType="int">
+SELECT 
+A.CNSL_CD
+, A.STU_CD
+, C.MEM_NM
+, A.CNSL_TTL
+, A.CNSL_CON
+, A.CNSL_REG
+, A.CNSL_DT 
+, A.CNSL_RPL
+, A.CNSL_YN
+, B.COMD_NM 
+FROM COUNSEL A, COMMON_DETAIL B, MEMBER C
+WHERE 
+A.STU_CD = C.MEM_CD 
+AND A.CNSL_CATE = B.COMD_CD 
+AND STU_CD IN(SELECT STU_CD FROM STUDENT WHERE STU_PRO = #{proCd}) 
+ORDER BY CNSL_REG DESC
+</select>
+
+<!-- 상담 상세내용 -->
+<select id="detail" resultType="hashmap" parameterType="String">
+SELECT 
+A.CNSL_CD
+, A.CNSL_TTL
+, A.CNSL_CON
+, A.CNSL_REG
+, A.CNSL_DT 
+, A.CNSL_RPL
+, A.CNSL_YN
+, A.CNSL_CATE
+, B.COMD_NM 
+, C.MEM_NM
+FROM COUNSEL A, MEMBER C, COMMON_DETAIL B
+WHERE
+A.STU_CD = C.MEM_CD 
+AND A.CNSL_CATE = B.COMD_CD 
+AND A.CNSL_CD = #{cnslCd}
+</select>
+
+<!-- 교수 상담 답장하기 -->
+<update id="reply" parameterType="CounselVO">
+UPDATE COUNSEL 
+SET 
+CNSL_RPL = #{cnslRpl} 
+, CNSL_YN = '상담완료'
+, CNSL_DT = SYSDATE 
+WHERE 
+CNSL_CD = #{cnslCd}
+</update>
+
+<!-- 학생 상담 수정 -->
+<update id="modify" parameterType="CounselVO">
+UPDATE COUNSEL 
+SET 
+CNSL_CATE = #{cnslCate}
+, CNSL_TTL = #{cnslTtl}
+, CNSL_CON = #{cnslCon}
+, CNSL_REG = SYSDATE 
+WHERE 
+CNSL_CD = #{cnslCd}
+</update>
+
+
+</mapper>

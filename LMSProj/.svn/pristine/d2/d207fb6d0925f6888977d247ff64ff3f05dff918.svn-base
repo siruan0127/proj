@@ -1,0 +1,342 @@
+package kr.ac.lms.controller;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.collections.map.HashedMap;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import kr.ac.lms.service.ProfessorLectureService;
+import kr.ac.lms.service.StudentLectureService;
+import kr.ac.lms.vo.LecApplyVO;
+import kr.ac.lms.vo.LecQnaVO;
+import kr.ac.lms.vo.LecQnarVO;
+import kr.ac.lms.vo.MemberVO;
+import kr.ac.lms.vo.QnaReplyVO;
+import kr.ac.lms.vo.StuTestVO;
+import kr.ac.lms.vo.TestDetailVO;
+import kr.ac.lms.vo.TestVO;
+import lombok.extern.slf4j.Slf4j;
+/**
+ * @author LG
+ *
+ */
+/**
+ * @author LG
+ *
+ */
+/**
+ * @author LG
+ *
+ */
+@Slf4j
+@RequestMapping("/studentLecture")
+@Controller
+public class StudentLectureController {
+
+	@Autowired
+	StudentLectureService studentLectureService;
+	
+	@Autowired
+	ProfessorLectureService professorLectureService; 
+	
+	// 학생 대시보드
+	@GetMapping("/stuList")
+	public String list(HttpServletRequest request, Model model) {
+		log.info("stuList");
+		
+		// 세션 불러 오고 나서
+//		HttpSession session = request.getSession();
+//		MemberVO memberVO = (MemberVO)session.getAttribute("memSession");
+//		
+//		memberVO.getMemCd();
+		
+		int stuCd = 20182696;
+		
+		List<LecApplyVO> list = this.studentLectureService.getStuLecList(stuCd);
+		
+		log.info("list==================== : " + list.toString());
+		
+		model.addAttribute("data", list);
+		
+		return "deshboard/stuList";
+	}
+	
+	// 학생 퀴즈 리스트
+	@GetMapping("/quiz")
+	public String quiz(@RequestParam("lecCd") int lecCd, Model model) {
+		log.info("quiz");
+		
+		LecApplyVO lec = this.professorLectureService.getProLecOne(lecCd);
+		List<TestVO> testList = this.professorLectureService.quizBoardList(lecCd);
+		
+		
+		int stuCd = 20182696;
+		
+		List<TestVO> checkSubmit = this.studentLectureService.checkQuizSubmit(stuCd);
+		
+		log.info("lecCd : " + lecCd);
+		log.info("checkSubmit : " + checkSubmit.toString() );
+		
+		
+		model.addAttribute("list", testList);
+		model.addAttribute("data", lec);
+		model.addAttribute("check", checkSubmit);
+		
+		return "studentLecture/quiz";
+	}
+	
+	// 학생 퀴즈 
+	@GetMapping("/quizDetail")
+	public String quizDetail(@RequestParam("testCd") int testCd, Model model) {
+		log.info("학생 quizDetail");
+		TestVO testQ = this.professorLectureService.quizDetail(testCd);
+		
+		int stuCd = 20182696;
+		
+		List<LecApplyVO> list = this.studentLectureService.getStuLecList(stuCd);
+		
+		log.info("list >> : " + list.toString());
+		
+		model.addAttribute("data",testQ);
+		model.addAttribute("code", list);
+		return "studentLecture/quizDetail";
+	}
+	
+	// @ModelAttribute StuTestVO stuTestVO, @ModelAttribute TestDetailVO testDetailVO
+	// insert query
+	// int stuTestRst = this.studentLectureService.stuTestInsert(stuTestVO);
+
+	// 학생 퀴즈 제출
+	@PostMapping("/stuQuizInsertPost")
+	public String stuQuizInsertPost(@RequestParam int stuCd, StuTestVO stuTestVO) {
+		log.info("stuQuizInsertPost 도착");
+		log.info("stuCd 받아 지나요? : " + stuCd);
+		
+		log.info("stuTestVO >> " + stuTestVO.toString());
+		
+		int stuTestRst = this.studentLectureService.stuTestInsert(stuTestVO);
+		int stCd = stuTestVO.getStCd();
+		log.info("stCd 불러와 지나요? : " + stCd);
+		
+		int lecCd = stuTestVO.getLecCd();
+		
+		//map 생성
+		Map<String, Object> testDetailVOMap = new HashMap<String, Object>();
+		
+		// 부모 키 자식에 insert 및 자식 list insert
+		testDetailVOMap.put("stCd", stCd);
+		testDetailVOMap.put("list", stuTestVO.getTestDetailVOList());
+		
+		
+		int testDetailRst = this.studentLectureService.testDetailInsert(testDetailVOMap);
+		
+		log.info("stuTest insert 됐나요? : " + stuTestRst);
+		log.info("testDetail insert 됐나요? : " + testDetailRst);
+		
+		
+		return "redirect:/studentLecture/quiz?lecCd=" + lecCd;
+	}
+	
+	// 제출 완료한 퀴즈 상세
+	@GetMapping("/quizDetailComplete")
+	public String quizDetailComplete(@RequestParam int testCd, Model model) {
+		log.info("quizDetailComplete에 도착");
+		
+		// 세션
+		int stuCd = 20182696;
+		
+		StuTestVO stuTestVO = new StuTestVO();
+		
+		stuTestVO.setStuCd(stuCd);
+		stuTestVO.setTestCd(testCd);
+		
+		TestVO stuList = this.studentLectureService.stuTestDetail(stuTestVO);
+		
+		log.info("stuList : " + stuList);
+		
+		model.addAttribute("data", stuList);
+		
+		return "studentLecture/quizDetailComplete";
+	}
+ 	
+	// 질문게시판 리스트 조회
+	@GetMapping("/lecQnaList")
+	public String lecQnaList(@RequestParam("lecCd") int lecCd, Model model) {
+		log.info("lecQnaList 도착");
+		
+		// 수업 정보
+		LecApplyVO lec = this.professorLectureService.getProLecOne(lecCd);
+		log.info("lec" + lec.toString());
+		// 질문게시판 정보
+		List<LecQnaVO> list = this.studentLectureService.getLecQnaList(lecCd);
+		log.info("list" + list.toString());
+		
+		model.addAttribute("data",lec);
+		model.addAttribute("list",list);
+		
+		return "studentLecture/lecQnaList";
+	}
+	
+	// 질문게시판 상세 조회
+	@GetMapping("/lecQnaDetail")
+	public String lecQnaDetail(@RequestParam("lqnaCd") int lqnaCd, Model model) {
+		log.info("lecQnaDetail 도착");
+
+		int result = this.studentLectureService.lecQnaHit(lqnaCd);
+		
+		log.info("result : " + result);
+
+		LecQnaVO lecQnaVO = this.studentLectureService.getLecQnaDetail(lqnaCd);
+		
+		List<LecQnarVO> lecQnarVOList = this.studentLectureService.getLecQnar(lqnaCd);
+		
+		model.addAttribute("data", lecQnaVO);
+		
+		model.addAttribute("qnarList", lecQnarVOList);
+		
+		return "studentLecture/lecQnaDetail";
+	}
+	
+	// 질문게시판 수정
+	@PostMapping("/lecQnaUpdate")
+	public String lecQnaUpdate(@ModelAttribute LecQnaVO lecQnaVO, RedirectAttributes rat) {
+		log.info("lecQnaUpdate 도착");
+		
+		int result = this.studentLectureService.lecQnaUpdate(lecQnaVO);
+		
+		rat.addFlashAttribute("lQnaCd", lecQnaVO.getLqnaCd());
+		
+		log.info("lqnaCd : " + lecQnaVO.getLqnaCd());
+		
+		log.info("result : " + result);
+		
+		return "redirect:/studentLecture/lecQnaDetail?lqnaCd=" + lecQnaVO.getLqnaCd();
+	}
+	
+	// 질문게시판 삭제
+	@PostMapping("/lecQnaDelete")
+	public String lecQnaDelete(int lqnaCd, LecQnaVO lecQnaVO) {
+		log.info("lecQnaDelete 도착");
+		
+		int result = this.studentLectureService.lecQnaDelete(lqnaCd);
+		
+		log.info("result : " + result);
+		log.info("LecCd : " + lecQnaVO.getLecCd());
+		
+		return "redirect:/studentLecture/lecQnaList?lecCd=" + lecQnaVO.getLecCd();
+	}
+	
+	// 질문게시판 등록 JSP
+	@GetMapping("/lecQnaInsert")
+	public String lecQnaInsert(@RequestParam int lecCd, Model model) {
+		log.info("lecQnaInsert 도착");
+		
+		LecApplyVO lec = this.professorLectureService.getProLecOne(lecCd);
+		
+		model.addAttribute("data", lec);
+		
+		
+		return "studentLecture/lecQnaInsert";
+	}
+
+	// 질문게시판 등록 POST
+	@PostMapping("/lecQnaWritePost")
+	public String lecQnaWritePost(@ModelAttribute LecQnaVO lecQnaVO) {
+		log.info("lecQnaWritePost 도착");
+		
+		int result = this.studentLectureService.lecQnaInsert(lecQnaVO);
+		
+		log.info("result : " + result);
+		
+		return "redirect:/studentLecture/lecQnaList?lecCd=" + lecQnaVO.getLecCd();
+	}
+	
+	// 질문게시판 답글 등록
+	@PostMapping("/lecQnarInsert")
+	public String lecQnarInsert (@ModelAttribute LecQnarVO lecQnarVO) {
+		log.info("lecQnarInsert 도착");
+		
+		int result = this.studentLectureService.lecqnarInsert(lecQnarVO);
+		
+		log.info("result : " + result);
+		
+		return "redirect:/studentLecture/lecQnaDetail?lqnaCd=" + lecQnarVO.getLqnaCd();
+	}
+	
+	// 질문게시판 답글 수정
+	@PostMapping("/lecQnarUpdate")
+	public String lecQnarUpdate(LecQnarVO lecQnarVO, RedirectAttributes rat) {
+		log.info("lecQnarUpdate 도착");
+		log.info("lec" + lecQnarVO.toString());
+		
+//		rat.addFlashAttribute("lqnaCd", lecQnarVO.getLqnaCd()); 
+		
+		log.info("lqnaCd : " + lecQnarVO.getLqnaCd());
+
+		int result = this.studentLectureService.lecQnarUpdate(lecQnarVO);
+		
+		log.info("result : " + result);
+		
+		return "redirect:/studentLecture/lecQnaDetail?lqnaCd=" + lecQnarVO.getLqnaCd();
+	}
+	
+	
+	// 질문게시판 답글 삭제
+	@PostMapping("/lecqnarDelete")
+	public String lecqnarDelete(int lqnaCd, LecQnarVO lecQnarVO) {
+		log.info("lecqnarDelete");
+		
+		int lqnarCd = lecQnarVO.getLqnarCd();
+		
+		int result = this.studentLectureService.lecQnarDelete(lqnarCd);
+		
+		log.info("result : " + result);
+		
+		return "redirect:/studentLecture/lecQnaDetail?lqnaCd=" + lecQnarVO.getLqnaCd();
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

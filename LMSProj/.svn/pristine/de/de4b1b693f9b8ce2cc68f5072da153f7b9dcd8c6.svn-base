@@ -1,0 +1,149 @@
+package kr.ac.lms.controller;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.ac.lms.service.CounselService;
+import kr.ac.lms.vo.CommonDetailVO;
+import kr.ac.lms.vo.CounselVO;
+import kr.ac.lms.vo.MemberVO;
+import lombok.extern.slf4j.Slf4j;
+import oracle.jdbc.proxy.annotation.Post;
+
+@Slf4j
+@Controller
+@RequestMapping("/counsel")
+public class CounselController {
+
+   @Autowired
+   private CounselService service;
+   
+   //학생의 전체 상담기록 불러오기
+   @GetMapping("/stuCounsel")
+   public String list(Model model, HttpServletRequest request) {
+      
+	  HttpSession session = request.getSession();
+	  MemberVO memVO = (MemberVO) session.getAttribute("memSession");   
+	  log.info("memVO" + memVO);
+	  int stuCd = memVO.getMemCd();
+      List<CounselVO> history = service.history(stuCd);
+      log.info("history" + history);
+      
+      model.addAttribute("history",history);
+      
+      return "counsel/stuCounsel";
+   }
+   
+   //학생의 상담 상세 기록 불러오기
+   @GetMapping("/stuCounselDetail")
+   public String stuCounselDetail(@RequestParam("cnslCd") int cnslCd, Model model, HttpServletRequest request ){
+	   HttpSession session = request.getSession();
+	   MemberVO memVO = (MemberVO) session.getAttribute("memSession");   
+	   
+	   if(memVO.getStudentVO()!=null) {
+		   model.addAttribute("stuCd","stu");
+		   model.addAttribute("proCd",null);
+	   }else if(memVO.getProfessorVO()!=null) {
+		   model.addAttribute("stuCd",null);
+		   model.addAttribute("proCd","pro");
+	   }
+	   
+	   CounselVO detail = service.detail(cnslCd);
+	   model.addAttribute("detail",	detail);
+	   List<CommonDetailVO> cate = service.cate();
+	   model.addAttribute("cate",cate);
+
+	   return "counsel/stuCounselDetail";
+	   
+   }
+  
+  
+   //학생의 상담 신청페이지이동
+   @GetMapping("/applyCounsel")
+   public String applyCounsel(Model model) {
+	   List<CommonDetailVO> cate = service.cate();
+	   model.addAttribute("cate",cate);
+	   return "counsel/applyCounsel";
+   }
+  
+   //학생의 상담 신청
+   @ResponseBody
+   @PostMapping("/stuCounselPost")
+   public int save(@ModelAttribute CounselVO counselVO, HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		MemberVO memVO = (MemberVO) session.getAttribute("memSession");
+		log.info("memVO" + memVO);
+		int stuCd = memVO.getMemCd();
+
+		int result = 0;
+
+		counselVO.setStuCd(stuCd);
+		log.info("vooooo" + counselVO.toString());
+
+		result = service.save(counselVO);
+
+		return result;
+   }
+   
+   //교수의 전체 상담 불러오기
+   @GetMapping("/proCounsel")
+   public String proHistory(Model model, HttpServletRequest request) {
+	   
+	   HttpSession session = request.getSession();
+	   MemberVO memVO = (MemberVO) session.getAttribute("memSession");  
+	   int proCd = memVO.getMemCd();
+	   
+	   //String proCd = "200231111"; //나중에 getSession
+	   List<CounselVO> proHistory = service.proHistory(proCd);
+	   model.addAttribute("proHistory",proHistory);
+	   log.info("proHistory" +proHistory);
+	   return "counsel/proCounsel";
+   }
+   
+
+   
+   //교수 상담 답장
+   @PostMapping("/reply")
+   @ResponseBody
+   public String reply(@ModelAttribute CounselVO counselVo) {
+	   service.reply(counselVo);
+	   String result= "답변을 작성하였습니다";
+
+	   return result;
+   }
+   
+   //학생 상담 카테, 제목, 내용 수정
+   @PostMapping("/modify")
+   @ResponseBody
+   public String modify(@ModelAttribute CounselVO counselVO) {
+	   String result= "글을 수정하였습니다.";
+	   log.info("counselVO" + counselVO);
+	   int cnt = service.modify(counselVO);
+	   return result;
+   }
+   
+   @PostMapping("/delete")
+   @ResponseBody
+   public int delete(int cnslCd) {
+	   int cnt = service.delete(cnslCd);
+	   return cnt;
+   }
+   
+   
+   
+}

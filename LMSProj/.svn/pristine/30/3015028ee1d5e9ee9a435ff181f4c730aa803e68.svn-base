@@ -1,0 +1,392 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>성적 이의 신청</title>
+<script src="/resources/js/jquery-3.6.0.js"></script>
+<script type="text/javascript" src="/resources/js/tui-grid.js"></script>
+<script type="text/javascript" src="/resources/js/spinner.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+<link rel="stylesheet" href="/resources/css/tui-grid.css" type="text/css">
+<style type="text/css">
+	#personalGradeInfo, #tgradeYellowBox {
+		border : 1px solid lightgray;
+		margin : 10px;
+		padding : 10px;
+	}
+	#tgradeYellowBox {
+		background : lightyellow;
+		height:47px;
+	}
+	#tgradeYellowBox  input{
+		width : 80px;
+		margin-left : 7px;
+		margin-right : 7px;
+		padding-left : 10px;
+	}
+	#tgradeGreenText {
+		color : green;
+	}
+	#gridNgrade {
+		height : 560px;
+		margin : 10px;
+		padding : 0px;
+		margin-bottom : 30px;
+	}
+	#grid, #appealGrade {
+		width : 48.4%;
+		float : left;
+		margin-top : 10px;
+	}
+	#appealGrade {
+		border : 1px solid lightgray;
+		float : right;
+		padding : 10px;
+		height : 540px;
+	}
+	#personalGradeInfo{
+	  border : 1px solid gray;
+      margin : 10px;
+      padding : 10px;
+      background: #f4f7fd;
+	}
+	#personalGradeInfo .round{
+		display : inline-block;
+		width : 31%;
+	}
+	#personalGradeInfo .round:first-child{
+		width : 40%;
+	}
+	#personalGradeInfo input{
+		width : 180px;
+	 	height: 33px;
+	 	background: #F2F2F2;
+	 	border: 1px solid gray;
+	 	border-radius : 5px;
+ 		padding-left : 5px;
+	}
+	#personalGradeInfo label{
+		text-align : right;
+		width : 130px;
+	}
+	#personalGradeInfo div:nth-child(2){
+		margin-left : 22.3%;
+	}
+	#tgradePreAppealPage{
+		width : 90%;
+		margin-left : auto;
+		margin-right : auto;
+	}
+	#tgradePreAppealSelect{
+		display:inline-block;
+		margin-left : 2%;
+	}
+	#percentageTable{
+		float : right;
+		margin-right : 10px;
+	}
+	#appealGrade{
+		text-align : center;
+		border-collapse:collapse;
+		border: 1px solid #999;
+	}
+	#appealGrade td{
+		border:none;
+	}
+	#appealGrade td:nth-child(2n-1){
+		background : #f4f7fd;
+		width : 40%;
+	}
+	#appealGrade tr:last-child .lecTitleRound{
+		text-align : center;
+		padding-bottom : 5px;
+	}
+	#appealGrade tr:last-child .lecTitleRound label{
+		width : 10%;
+	}
+	#appealGrade input{
+		border: 1px solid #dedede;
+	}
+	#appealGrade tr:last-child .lecTitleRound input{
+		width : 77%;
+		height : 30px;
+	}
+	#preAppealSubmitBtn{
+		float : right;
+		margin-right : 15px;
+	}
+</style>
+</head>
+<script type="text/javascript">
+
+	var memFnm;
+
+	function gradeAppeal(lecaCd) {
+		
+		//이의신청 여부 확인하기
+		$.ajax({
+			url : "/tgrade/checkObjection",
+			type : "POST",
+			data : {lecaCd : lecaCd},
+			dataType : "JSON",
+			success : function(res) {
+				if(res == 1) { //null인 경우
+					
+					//이의신청 하지 않은 경우 과목 정보 불러오기
+					$.ajax({
+						url : "/tgrade/getCourseInfo",
+						type : "POST",
+						data : {lecaCd : lecaCd},
+						dataType : "JSON",
+						success : function(res) {
+							$('#lec_yrNsem').val(res.lecaBook);
+							$('#lec_subCd').val(res.subCd);
+							$('#lec_lecNm').val(res.lecaNm);
+							$('#lec_proNm').val(res.lecaNote);
+							$('#lec_lecCd').val(res.lecCd);
+						}
+					});
+				}else {
+					alert("이미 이의신청한 과목입니다.");
+				}
+			}
+		});
+	}
+
+	window.onload = function() {
+		
+		//로딩중 화면 띄우기
+		loadingWithMask();
+		setTimeout(closeLoadingWithMask, 700);
+		
+		var result = '${result}';
+		
+		if(result != null) {
+			if(result == '1') {
+				alert("해당 과목의 이의신청이 완료되었습니다.");
+			}else if(result == '0') {
+				alert("다시 시도해주세요.");
+			}
+		}
+		
+		//개인정보 가져오기
+		$.ajax({
+			url : "/tgrade/getInfo",
+			type : "POST",
+			dataType : "JSON",
+			success : function(res) {
+				//학번(memCd), 이름(memNm), 생년월일(memReg1), 연락처(memTel),
+				//단과대학/전공(memNme), 입학정보(memAddr1), 변동(memAddr2), 수강신청학년(memMl)
+				$('#stuCd').val(res.memCd);
+				$('#memName').val(res.memNm);
+				$('#memReg1').val(res.memReg1);
+				$('#memTel').val(res.memTel);
+				$('#college').val(res.memNme);
+				$('#admission').val(res.memAddr1);
+				$('#admChange').val(res.memAddr2);
+				$('#yrNsem').val(res.memMl);
+				
+				memFnm = res.memFnm;
+			}
+		});
+		
+		//년도 및 학기 불러오기
+		$.ajax({
+			url : "/tgrade/getNow",
+			type : "GET",
+			dataType : "JSON",
+			success : function(res) {
+				$("#tgradePreYear").val(res.YEAR);
+				$("#tgradePreSemester").val(res.SEMESTER);
+			}
+		});
+		
+		$.ajax({
+			url : "/tgrade/getPreCnt",
+			type : "POST",
+			dataType : "JSON",
+			success : function(res) {
+				
+				$("#tgradePreSub").text(res);
+			}
+		});
+		
+		//전체 성적 불러오기
+		$.ajax({
+			url : "/tgrade/getPreList",
+			type : "POST",
+			dataType : "JSON",
+			success : function(res) {
+				
+				$.each(res, function(i,v){
+					res[i]['btn'] = '<button class="btn btn-outline-secondary btn-sm" style="font-family:Nunito,sans-serif;" onclick="gradeAppeal(' + v.lecaCd + ')">신청</button>';
+				});
+				
+				grid = new tui.Grid({
+					el : document.getElementById('grid'),
+					data : res,
+					scrollX : true,
+					scrollY : true,
+					bodyHeight : 500,
+					rowHeaders : ['rowNum'],
+					columns : [
+						{header : '과목번호', filter : 'select', name : 'subCd', align : 'center', width : 90},
+						{header : '교과목명', filter : 'select', name : 'lecaNm', width : 90},
+						{header : '학점', filter : 'select', name : 'lecaCrd', align : 'center', width : 70},
+						{header : '성적평가', filter : 'select', name : 'lecaGrade', align : 'center', width : 100},
+						{header : '등급', filter : 'select', name : 'lecaNote', align : 'center', width : 70},
+						{header : '결석', filter : 'select', name : 'lecCd', align : 'center', width : 70},
+						{header : '평점', filter : 'select', name : 'lecaRoom', align : 'center', width : 70},
+						{header : '성적이의신청', name : 'btn', align : 'center', width : 100}
+					],
+					columnOptions : {
+						resizable : true
+					}
+				});
+			}
+		});
+		
+		//백분율환산기준표 띄우기
+		$('#percentageTable').on('click', function() {
+			window.open("/tgrade/crdStandardPdf");
+		});
+		
+		//사진 띄우기
+		$('#photoBtn').on('click', function() {
+			
+			//memFnm : 이미지 이름.확장자
+			if(memFnm == null) {
+				alert("등록된 사진이 없습니다.");
+			}else {
+				
+				const img = new Image();
+				img.src = "/resources/profileImg/" + memFnm;
+				console.log("width : " + img.width + ", height : " + img.height);
+				
+				window.open(
+						"/tgrade/getPhoto?memFnm=" + memFnm,
+						"photo",
+						"width = 175, height = 210, left = 300, top = 150, history = no, resizable = no, status = no, scrollbars = yes, menubar = no"
+				);
+			}
+		});
+	}
+</script>
+<body>
+<div id="tgradePreAppealPage">
+	<div>
+    	<i class="mdi mdi-home" style="font-size: 1.3em"></i> <i class="dripicons-chevron-right"></i> 성적 <i class="dripicons-chevron-right"></i> <span style="font-weight: bold;">성적 이의 신청</span>
+  	</div>
+
+	<div id = "personalGradeInfo">
+		<div class="round">
+			<label>학번</label>
+			<input type="text" name="stuCd" id="stuCd" readonly="readonly">
+			<button type="button"  class="btn btn-secondary" id="photoBtn">사진</button>
+		</div>
+		<div class="round">
+			<label>이름</label>
+			<input type="text" name="memName" id="memName" readonly="readonly">
+		</div>
+		<div class="round">
+			<label>생년월일(성별)</label>
+			<input type="text" name="memReg1" id="memReg1" readonly="readonly">
+		</div>
+		<div class="round">
+			<label>연락처</label>
+			<input type="text" name="memTel" id="memTel" readonly="readonly">
+		</div>
+		<div class="round">
+			<label>단과대학/전공</label>
+			<input type="text" name="college" id="college" readonly="readonly">
+		</div>
+		<div class="round">
+			<label>입학정보</label>
+			<input type="text" name="admission" id="admission" readonly="readonly">
+		</div>
+		<div class="round">
+			<label>변동</label>
+			<input type="text" name="admChange" id="admChange" readonly="readonly">
+		</div>
+		<div class="round">
+			<label>수강신청학년(학기)</label>
+			<input type="text" name="yrNsem" id="yrNsem" readonly="readonly">
+		</div>
+	</div>
+	
+	<br><br>
+	
+	<p id="tgradePreAppealSelect"><i class="mdi mdi-record-circle" style="color: #001353;"></i>&ensp;취득성적</p>
+		<button type="button" class="btn btn-secondary" id="percentageTable">백분율환산기준표</button>
+		&nbsp;&nbsp;총 <span class="tgradePreCnt" id="tgradePreSub" style="color:red;"></span>건
+	<div id="tgradeYellowBox">
+		<label>년도
+			<input type="text" name="yrNsem" id="tgradePreYear" readonly="readonly">
+		</label>
+		<label>학기
+			<input type="text" name="yrNsem" id="tgradePreSemester" readonly="readonly">
+		</label>
+		<span id="tgradeGreenText">&emsp;<i class="mdi mdi-square-medium"></i>&nbsp;증명 마감된 과목에 한해 성적이 표기됩니다.</span>
+	</div>
+	
+	<div id="gridNgrade">
+		<div id="grid"></div>
+		<table id="appealGrade" border="1">
+			<tr>
+				<td>년도/학기</td>
+				<td><input type="text" name="lec_yrNsem" id="lec_yrNsem" readonly="readonly"></td>
+				<td>과목번호</td>
+				<td><input type="text" name="lec_subCd" id="lec_subCd" readonly="readonly"></td>
+			</tr>
+			<tr>
+				<td>강의명</td>
+				<td colspan="2"><input type="text" name="lec_lecNm" id="lec_lecNm" readonly="readonly" style="width:100%;"></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>교수명</td>
+				<td colspan="2"><input type="text" name="lec_proNm" id="lec_proNm" readonly="readonly" style="width:100%;"></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td colspan="4">
+					<form action="/tgrade/sendAppeal" method="post">
+						<div class="lecTitleRound">
+							<label>제목</label>
+							<input type="text" name="objTtl" id="lec_title">
+						</div>
+						<textarea id="summernote" name="objCon"></textarea>
+						<input type="text" name="lecCd" id="lec_lecCd" hidden="hidden" />
+						<button type="submit" id="preAppealSubmitBtn" class="btn btn-primary" style="margin-top : 10px;">신청하기</button>
+					</form>
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>
+<script>
+	$('#summernote').summernote({
+	  placeholder: '',
+	  tabsize: 2,
+	  height: 200,
+	  toolbar: [
+	    ['style', ['style']],
+	    ['fontname', ['fontname']],
+        ['fontsize', ['fontsize']],
+	    ['font', ['bold', 'underline', 'clear']],
+	    ['color', ['color']],
+	    ['para', ['ul', 'ol', 'paragraph']],
+	    ['table', ['table']],
+	    ['insert', ['link', 'picture', 'video']],
+	    ['view', ['fullscreen', 'codeview', 'help']]
+	  ],
+	  fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New','맑은 고딕','궁서','굴림체','굴림','돋움체','바탕체'],
+      fontSizes: ['8','9','10','11','12','14','16','18','20','22','24','28','30','36','50','72']
+	});
+</script>
+</body>
+</html>

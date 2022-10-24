@@ -1,0 +1,195 @@
+@charset "UTF-8";
+
+*{
+  margin:0;
+  padding:0;
+}
+ul,li{
+  list-style:none;
+}
+a{
+  color:inherit;
+  text-decoration:none;
+}
+html{
+	width : 100%;
+	height : 100%;
+}
+#fullScreen{
+	width : 100%;
+	height : 100%;
+	margin-left:auto;
+	margin-right : auto;
+	overflow : hidden;
+}
+#img{
+	position : absolute;
+	display : inline-block;
+	width: 100%;
+	height : 100%;
+}
+#findForm{
+	position : relative;
+	width : 800px;
+	margin-left:auto;
+	margin-right : auto;
+	margin-top : 330px;
+}
+#findId{
+	opacity : 70%;
+	background : #fff;
+	color : #001353;
+	width : 250px;
+	padding : 10px;
+	font-size : 14pt;
+	font-weight : bold;
+	border:3px solid #001353;
+	border-bottom :none;
+	border-radius : 10px 10px 0px 0px;
+	cursor : pointer;
+}
+
+#findForm form{
+	background : white;
+	opacity : 70%;
+	border: 3px solid #001353;
+	border-top : none;
+	padding : 20px;
+	border-radius : 0px 10px 10px 10px;
+}
+#findForm form label{
+	display : inline-block;
+	width : 100px;
+	text-align : right;
+	font-size : 13pt;
+	font-weight : bold;
+	margin-left : 100px;
+}
+#findForm form label:first-child, #findForm form input:first-child{
+	margin-top : 50px;
+}
+#findForm form label, #findForm form input{
+	margin-top : 15px;
+}
+#findForm form input{
+	margin-left : 30px;
+	width : 200px;
+	height : 35px;
+	border-radius : 5px;
+	border : 1px solid #777;
+	background : none;
+	color : black;
+}
+#confirmId{
+	width : 100px;
+	color : #fff;
+	background : #001353;
+	padding : 8px 2px;
+	border-radius : 10px;
+	font-weight: bold;
+	cursor : pointer;
+	margin-left : 480px;
+	position : relative;
+	bottom : 35px;
+}
+#confirmId:hover{
+	color : #001353;
+	background : #fff;
+}
+
+#findPass{
+	background : #001353;
+	color : #fff;
+	width : 250px;
+	padding : 10px;
+	font-size : 14pt;
+	font-weight : bold;
+	border:3px solid #001353;
+	border-radius : 10px 10px 0px 0px;
+	position : relative;
+	right : 1%;
+	cursor : pointer;
+}
+#passForm{
+	opacity : 70%;
+	background : white;
+	border: 3px solid #001353;
+	border-top :none;
+	padding : 20px;
+	padding-bottom : 50px;
+	border-radius : 0px 10px 10px 10px;
+}
+#passForm label{
+	display : inline-block;
+	width : 100px;
+	text-align : right;
+	font-size : 13pt;
+	font-weight : bold;
+	margin-left : 100px;
+}
+#passForm label:first-child, #passForm input, #passForm select{
+	margin-top : 50px;
+}
+#passForm label, #passForm input, #passForm select{
+	margin-top : 15px;
+}
+#passForm input, #passForm select{
+	border : 1px solid #888;
+	height : 35px;
+	border-radius : 5px;
+}
+#memCd{
+	margin-left : 30px;
+	width : 200px;
+	height : 35px;
+	border-radius : 5px;
+	border : 1px solid #000;
+	background : none;
+	color : black;
+}
+#tel{
+	margin-left : 30px;
+	padding : 5px;
+}
+#tel1,#tel2{
+	width : 100px;
+	height : 25px;
+}
+
+#confirmPass{
+	width : 200px;
+	color : #fff;
+	background : #001353;
+	padding : 8px 2px;
+	border-radius : 10px;
+	font-weight: bold;
+	cursor : pointer;
+	margin-left : 335px;
+	margin-top : 20px;
+}
+#confirmPass:hover{
+	color : #001353;
+	background : #fff;
+}
+#findId, #findPass{
+	position:relative;
+	top : 3px;
+}
+
+#loginPageBtn{
+	display : block;
+	width : 120px;
+	color : #fff;
+	background : #001353;
+	padding : 10px;
+	border-radius : 10px;
+	font-weight: bold;
+	cursor : pointer;
+	margin-top : 20px;
+	position : relative;
+	left : 680px;
+}
+#loginPageBtn:hover{
+	color : #001353;
+	background : #fff;
+}

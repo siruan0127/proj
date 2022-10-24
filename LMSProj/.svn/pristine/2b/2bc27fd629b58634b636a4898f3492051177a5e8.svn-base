@@ -1,0 +1,251 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style type="text/css">
+#check{
+	border : 1px solid lightgrey;
+	background-color: lightyellow;
+	color : green;
+	padding : 10px;
+	margin-bottom : 20px;
+}
+#grid * , #grid1 *{
+	text-align: center;
+}
+#btn1{
+float: right;
+}
+
+</style>
+<script src="/resources/js/jquery-3.6.0.js"></script>
+<link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+<script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+<script>
+var girdData;
+var grid;
+var gird1;
+var test;
+var cnt;
+
+function disableFunc(){
+	$.ajax({
+	url:"/scholarship/countCheck",
+	type: "POST",
+	dataType : "JSON",
+	success:function(result){
+		console.log(result);
+		if(result>1){
+			$('#grid').css('opacity','0.3');
+			$('#check').empty();
+			let str='<span class="comment">*이미 학생 2명을 추천하였습니다.</span>'
+			$('#btn1').remove();
+			$('#check').append(str);
+			}else if(result == 0){
+			let str='<span class="comment">*현재 학생 2명을 추천할 수 있습니다.</span>'
+			$('#check').append(str);
+			cnt = 0;
+			}else if(result ==1){
+			let str='<span class="comment">*현재 학생 1명을 추천할 수 있습니다.</span>'
+			$('#check').append(str);
+			cnt = 1;
+			}
+		}
+	})
+};
+
+var gridList = function(){ 
+	
+	$('#grid').empty();
+	
+	$.ajax({
+		url:"/scholarship/recommendGrid",
+		dataType:'json',
+		type: "POST",
+		success:function(result){
+				
+			girdData = JSON.stringify(result);
+			
+			grid = new tui.Grid({
+				el: document.getElementById('grid'), 
+				data : result,
+ 				scrollX : true, //옆위로 스크롤기능 막음
+ 				scrollY : true,
+ 				bodyHegiht : 350,
+ 				minBodyHeight : 350,
+ 				rowHeaders: [{type: 'rowNum'},{type: 'checkbox'}],
+ 			
+				columns: [
+					{
+						header: '학번',
+						name: 'STU_CD'
+					},
+					{
+						header: '이름',
+						name: 'MEM_NM'
+					},
+					{
+						header: '학년',
+						filter : 'select',
+						name: 'STU_YR'
+					},
+					{
+						header: '학기',
+						name: 'STU_SEM'
+						
+					},
+					{
+						header : '추천여부',
+						filter : 'select',
+						name: 'RECOMMEND'
+					}
+				]
+			});
+			
+		var test3 =grid.findRows({
+			RECOMMEND : '추천'
+		});
+		
+		$.each(test3, function(i,v){
+			grid.disableRowCheck(v.rowKey);
+		});
+			
+		grid.on('check', function(object){
+		test = grid.getCheckedRows(object);
+			})
+	
+		grid.on('uncheck',function(object){
+		test = grid.getCheckedRows(object);
+				})
+		
+		grid.on('checkAll',function(object){
+		test = grid.getCheckedRows(object);
+				})
+			}
+		})
+		
+	}
+	
+	
+var gridList2 = function(){
+	$('#grid1').empty();
+	
+	$.ajax({
+		url:"/scholarship/proHistoryGrid",
+		dataType:'json',
+		type: "POST",
+		success:function(result){
+				
+			girdData = JSON.stringify(result);
+			
+			grid = new tui.Grid({
+				el: document.getElementById('grid1'), 
+				data : result,
+ 				scrollX : true, //옆위로 스크롤기능 막음
+ 				scrollY : true,
+ 				bodyHegiht : 350,
+ 				minBodyHeight : 350,
+ 				rowHeaders: [{type: 'rowNum'}],
+				
+				columns: [
+					{
+						header: '수여일자',
+						name: 'sclhDt'
+					},
+					{
+						header: '학번',
+						name: 'stuCd'
+					},
+					{
+						header: '이름',
+						name: 'sclhRsn'
+					}
+				
+				]
+			});
+		
+			}
+		})
+}
+	
+function submit(){
+	
+	var dataSet = [];
+	
+	$.each(test,function(i,v){
+		var tmp = {};
+		var stuCd = v.STU_CD;
+		var stuSem = v.STU_SEM;
+		var memCd = $('#btn1').data('memcd');
+		var sclCd = 3;
+		tmp.stuCd = stuCd;
+		tmp.stuSem = stuSem;
+		tmp.sclCd = sclCd;
+		tmp.memCd = memCd;
+		dataSet.push(tmp);
+	})
+	
+	var size = dataSet.length
+	var max = size + cnt;
+	
+	if(max>2){
+		alert("학생 추천은 2명까지만 가능합니다.")
+	}else{
+		$.ajax({
+			url : "/scholarship/proApply",
+			type : "POST",
+			data : JSON.stringify(dataSet),
+			dataType:'json',
+			contentType: 'application/json',
+            success : function(result){
+            	if(result>0){
+            	alert("장학금 신청이 완료되었습니다.");
+            	disableFunc();
+        		gridList();
+            	}
+            }
+		})
+	}
+}	
+
+$(document).ready(function(){
+	
+	disableFunc();
+	gridList();
+	gridList2();
+	
+	$('#btn1').on('click',function(){
+		submit();
+		
+	})
+	
+});
+
+
+</script>
+</head>
+<body>
+<div>
+<i class="mdi mdi-home" style="font-size: 1.3em"></i> <i class="dripicons-chevron-right"></i> 학생관리 <i class="dripicons-chevron-right"></i>
+<span style="font-weight: bold;">장학생추천</span>
+</div>
+<br><br>
+<div id="check">
+<span>교수 추천 장학금은 교수가 담당하는 학과의 학생 중 2명을 추천할 수 있습니다. 이미 추천된 학생은 중복 추천 불가능합니다.</span><br>
+</div>
+<input type="button" id="btn1" value="제출" data-memcd="${memCd}">
+<div style="width : 70%; float:left;">
+	<p><i class="mdi mdi-record-circle" style="color: #001353;"></i>&ensp;추천가능학생목록</p>
+	<div id="grid" >
+	</div>
+</div>
+<p><i class="mdi mdi-record-circle" style="color: #001353;"></i>&ensp;추천학생내역</p>
+<div id="grid1" style="width : 30%; float:right;">
+</div>
+
+</body>
+</html>

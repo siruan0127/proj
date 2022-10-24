@@ -1,0 +1,122 @@
+@charset "UTF-8";
+
+#pregisterListRound{
+	width : 94%;
+	margin-left : 12.5%;
+	margin-right : auto;
+}
+#personalInfo, #courseInfo {
+	border : 1px solid lightgray;
+	margin : 10px;
+	padding : 10px;
+}
+#personalInfo{
+	background : #f4f7fd;
+	text-align : center;
+}
+#personalInfo .round{
+	display : inline-block;
+	width : 30%;
+}
+#personalInfo .round:nth-child(2),
+#personalInfo .round:nth-child(3)
+{
+	width : 15%;
+}
+#personalInfo .round label {
+	display : inline-block;
+	margin-right : 10px;
+}
+#personalInfo .round input{
+	display : inline-block;
+ 	background: #f9f9f9;
+ 	border: 1px solid gray;
+ 	border-radius : 5px;
+ 	padding : 5px;
+ 	width : 60%;
+}
+#personalInfo .round:nth-child(2) input,
+#personalInfo .round:nth-child(3) input
+{
+	width : 30%;
+}
+#personalInfo .round:last-child input{
+	width : 40%;
+}
+#beRed {
+	color : rgb(225, 39, 64);
+	font-weight : bold;
+}
+.pregisterCnt {
+	display : inline-block;
+	width : 100px;
+	padding-left : 15px;
+}
+#courseInfo{
+	text-align : center;
+	background : #f4f7fd;
+}
+#courseInfo input,
+#courseInfo select
+{
+	background: #f9f9f9;
+ 	border: 1px solid gray;
+ 	border-radius : 5px;
+ 	padding : 5px;
+}
+#btn2GetList{
+	margin-left : 10px;
+}
+#grid td, #grid1 td{
+	background : #f9f9f9;
+}
+.addBtn{
+	background : #475b99;
+	border: 0.5px solid #777;
+	color : #fff;
+	padding:3px;
+	padding-left : 5px;
+	padding-right : 5px;
+	font-weight : bold;
+}
+.planFormBtn{
+	background : white;
+	border: 0.5px solid #777;
+	color : #777;
+	padding:3px;
+	font-weight : bold;
+	border-radius : 3px;
+}
+.delBtn{
+	background : #f4f4f4;
+	color : #e05a5a;
+	font-weight : bold;
+	border : 0.3px solid #999;
+	padding:3px;
+	padding-left : 5px;
+	padding-right : 5px;
+}
+#grid1{
+	margin-bottom : 30px;
+}
+#showTimeTable th, td {
+	width : 60px;
+	text-align : center;
+}
+#showTimeTable th {
+	background-color : rgb(244, 247, 253);
+}
+#showTimeTable td{
+	height: 35px;
+}
+#timeTableDiv {
+	width : 400px;
+	padding-left : 30px;
+	margin-right : 50px;
+}
+.highlighted {
+	background-color : lightyellow;
+}
+.setBgGray {
+	background-color : lightyellow;
+}
